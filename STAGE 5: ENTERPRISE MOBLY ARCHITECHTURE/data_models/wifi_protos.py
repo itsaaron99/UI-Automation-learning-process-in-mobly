@@ -10,4 +10,3 @@ from typing import Optional
 class WifiConfig:
     ssid: str
     password: Optional[str] = None
-    security_type: str = 'WPA2'  # Default to WPA2

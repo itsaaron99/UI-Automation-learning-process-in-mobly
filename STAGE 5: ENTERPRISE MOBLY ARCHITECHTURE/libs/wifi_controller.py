@@ -1,8 +1,4 @@
-"""
-Encapsulation Wi-Fi related bottom actions (ADB / Snippet)
-"""
-
-
+import time 
 from data_models.wifi_protos import WifiConfig
 
 class WifiController:
@@ -12,29 +8,22 @@ class WifiController:
         self.ad = ad_device
 
     def connect(self, config: WifiConfig):
-        """
-        Connects to the specified Wi-Fi network.
+        ssid = str(config.ssid) if config.ssid else ""
+        pwd = str(config.password) if config.password else None
+        self.ad.log.info(f"WifiController: Connecting to SSID: '{ssid}' with PWD: '{pwd}'")
 
-        Args:
-            config: A WifiConfig data model containing SSID and password.
-        """        
-        self.ad.log.info('WifiController: Preparing to connect to %s...', config.ssid)
-        self.ad.log.info('Note: Connection timeout is typically 2 minutes. Please wait if testing failure.')
+        if not ssid:
+            self.ad.log.error("SSID is empty! Skipping connection.")
+            return False
 
-        """ Use ADB to simulate/ensure Wi-Fi is enabled """
-        self.ad.adb.shell('cmd wifi set-wifi-enabled enabled')
-
-        """ Call Snippet to perform actual connection (if Snippet is loaded) """
         if hasattr(self.ad, 'mbs'):
-            """ Handle password logic: empty string converts to None (Open Network) """
-            pwd = config.password if config.password else None
             try:
-                self.ad.mbs.wifiConnectSimple(config.ssid, pwd)
-            except KeyboardInterrupt:
-                self.ad.log.warning('Connection cancelled by user! (KeyboardInterrupt)')
-                raise
+                if not self.ad.mbs.wifiIsEnabled():
+                    self.ad.mbs.wifiEnable()
+                    time.sleep(2)
+                
+                self.ad.mbs.wifiConnectSimple(ssid, pwd)
+                return True
             except Exception as e:
-                self.ad.log.error('Connection Fail %s', e)
+                self.ad.log.error(f"Connection Fail: {e}")
                 raise e
-
-        self.ad.log.info('WifiController: Successfully connected to SSID %s', config.ssid)

@@ -7,6 +7,7 @@ TODO:
 5. Add is_app_in_foreground() - done
 """
 from data_models.app_protos import AppConfig
+import time
 
 class AppController:
 
@@ -36,20 +37,20 @@ class AppController:
         self.ad.log.info('AppController: Force stopping %s ...', config.package_name)
         self.ad.adb.shell(f'am force-stop {config.package_name}')
 
-    def install(self, config: AppConfig):
+    def install(self, config: AppConfig) -> bool:
         """ install apk through ADB command and calls "is_installed" func to do double check """
-        self.ad.log.info('AppController: Start installing APK %s', config.target_app_pkg)
+        self.ad.log.info('AppController: Start installing APK %s', config.package_name)
 
         try:
-            self.ad.adb.install(['-r', config.test_app_path])
+            self.ad.adb.install(['-r', config.package_path])
 
         except Exception as e:
             error_msg = str(e).lower()
             if 'offline' in error_msg or 'not found' in error_msg or 'disconnected' in error_msg:
-                self.ad.log.error(f"AppController: device disconnection, fail to install {config.target_app_pkg}")
+                self.ad.log.error(f"AppController: device disconnection, fail to install {config.package_name}")
                 raise RuntimeError(f"ADB connection error: {e}")
 
-            self.ad.log.error('AppController: Failed to install %s. Error: %s', config.target_app_pkg, e)
+            self.ad.log.error('AppController: Failed to install %s. Error: %s', config.package_name, e)
             return False
 
         return self.is_installed(config)
@@ -60,18 +61,18 @@ class AppController:
         step 2: execute the adb command, using try-except to do error handing
         step 3: if the apk has been un-installed, return true, else false.
         """
-        self.ad.log.info('AppController: Start uninstalling APK %s', config.target_app_pkg)
+        self.ad.log.info('AppController: Start uninstalling APK %s', config.package_name)
         if not self.is_installed(config):
-            self.ad.log.info('AppController: %s is already been uninstalled', config.target_app_pkg)
+            self.ad.log.info('AppController: %s is already been uninstalled', config.package_name)
             return True
 
         try:
-            self.ad.adb.uninstall(config.test_app_name)
+            self.ad.adb.uninstall(config.package_name)
 
         except Exception as e:
             error_msg = str(e).lower()
             if 'offline' in error_msg or 'not found' in error_msg or 'disconnected' in error_msg:
-                self.ad.log.error('AppController: device disconnection, fail to uninstall {config.target_app_pkg}')
+                self.ad.log.error(f'AppController: device disconnection, fail to uninstall {config.package_name}')
                 raise RuntimeError(f"ADB connection error: {e}")
 
             self.ad.log.error('AppController: adb uninstall command failed. Error: %s', e)
@@ -81,10 +82,10 @@ class AppController:
         is_still_present = self.is_installed(config)
 
         if is_still_present:
-            self.ad.log.error('AppController: Failed to uninstall %s. It still exists.', config.target_app_pkg)
+            self.ad.log.error('AppController: Failed to uninstall %s. It still exists.', config.package_name)
             return False
 
-        self.ad.log.info('AppController: %s uninstalled successfully', config.target_app_pkg)
+        self.ad.log.info('AppController: %s uninstalled successfully', config.package_name)
         return True
     
     def clear_data(self, config: AppConfig) -> bool:
@@ -93,18 +94,18 @@ class AppController:
         Step 2: execute the ADB command, using try-except to do error handing
         Step 3: secure the success msg
         """
-        self.ad.log.info('AppController: Executing %s data cleaning proccess...', config.target_app_pkg)
+        self.ad.log.info('AppController: Executing %s data cleaning proccess...', config.package_name)
         if not self.is_installed(config):
-            self.ad.log.info('AppController: %s is not installed, no need to clear data.', config.target_app_pkg)
+            self.ad.log.info('AppController: %s is not installed, no need to clear data.', config.package_name)
             return True
         
         try:
-            raw_output = self.ad.adb.shell(['pm', 'clear', config.target_app_pkg])
+            raw_output = self.ad.adb.shell(['pm', 'clear', config.package_name])
 
         except Exception as e:
             error_msg = str(e).lower()
             if 'offline' in error_msg or 'not found' in error_msg or 'disconnected' in error_msg:
-                self.ad.log.error(f'AppController: device disconnection, fail to clear {config.target_app_pkg}')
+                self.ad.log.error(f'AppController: device disconnection, fail to clear {config.package_name}')
                 raise RuntimeError(f"ADB connection error: {e}")
 
             self.ad.log.error('AppController: adb clear command failed. Error: %s', e)
@@ -113,10 +114,10 @@ class AppController:
         """ Check log msg if the data of apk has been cleanned """
         msg = raw_output.decode('utf-8').lower() if isinstance(raw_output, bytes) else str(raw_output).lower()
         if 'success' in msg:
-            self.ad.log.info('AppController: Data of %s has been cleared successfully.', config.target_app_pkg)
+            self.ad.log.info('AppController: Data of %s has been cleared successfully.', config.package_name)
             return True
 
-        self.ad.log.error('AppController: Fail to clear %s.', config.target_app_pkg)
+        self.ad.log.error('AppController: Fail to clear %s.', config.package_name)
         return False
 
     def launch_app(self, config: AppConfig) -> bool:
@@ -126,26 +127,33 @@ class AppController:
            "adb shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1"
         3. call func is_app_in_foreground() to check if app has been activated.
         """
-        self.ad.log.info('AppController: Launching %s...', config.target_app_pkg)
+        self.ad.log.info('AppController: Launching %s...', config.package_name)
         if not self.is_installed(config):
-            self.ad.log.error('AppController: %s is not installed, please try again.', config.target_app_pkg)
+            self.ad.log.error('AppController: %s is not installed, please try again.', config.package_name)
             return False
         
         try:
-            self.ad.adb.shell(['monkey', '-p', config.target_app_pkg, '-c', 'android.intent.category.LAUNCHER', '1'])
+            self.ad.adb.shell(['monkey', '-p', config.package_name, '-c', 'android.intent.category.LAUNCHER', '1'])
 
         except Exception as e:
             error_msg = str(e).lower()
             if 'offline' in error_msg or 'not found' in error_msg or 'disconnected' in error_msg:
-                self.ad.log.error(f'AppController: device disconnection, fail to launch {config.target_app_pkg}')
+                self.ad.log.error(f'AppController: device disconnection, fail to launch {config.package_name}')
                 raise RuntimeError(f"ADB connection error: {e}")
 
             self.ad.log.error('AppController: adb launch command failed. Error: %s', e)
             return False
 
-        if self.is_app_in_foreground(config):
-            return True
-        self.ad.log.error('AppController: Fail to launch app %s, is not in foreground', config.target_app_pkg)
+        # Using polling to avoid the test fail 
+        timeout = 10
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            if self.is_app_in_foreground(config):
+                return True
+            self.ad.log.info('AppController: Waiting for %s to be in foreground...', config.package_name)
+            time.sleep(1)
+            
+        self.ad.log.error('AppController: Fail to launch app %s, is not in foreground', config.package_name)
         return False
 
     def is_app_in_foreground(self, config: AppConfig) -> bool:
@@ -156,7 +164,7 @@ class AppController:
            Log examples:
            mResumedActivity: ActivityRecord{... com.android.settings/.Settings ...}
         """
-        self.ad.log.info('AppController: Checking if %s in foreground...', config.target_app_pkg)
+        self.ad.log.info('AppController: Checking if %s in foreground...', config.package_name)
 
         try:
             log_output = self.ad.adb.shell(['dumpsys', 'activity', 'activities'])
@@ -164,7 +172,7 @@ class AppController:
         except Exception as e:
             error_msg = str(e).lower()
             if 'offline' in error_msg or 'not found' in error_msg or 'disconnected' in error_msg:
-                self.ad.log.error('AppController: device disconnection, fail to check if %s launching...', config.target_app_pkg)
+                self.ad.log.error('AppController: device disconnection, fail to check if %s launching...', config.package_name)
                 raise RuntimeError(f"ADB connection error: {e}")
             
             self.ad.log.error('AppController: adb dumpsys command failed. Error: %s', e)
@@ -174,12 +182,13 @@ class AppController:
         """ 
         Using .splitlines to capture both 'mResumedActivity' and config.target_app_pkg is in log or not 
         """
+        foreground_keywords = ['mResumedActivity', 'topResumedActivity', 'mCurrentFocus', 'mFocusedApp']
         for line in msg.splitlines():
-            if 'mResumedActivity' in line and config.target_app_pkg in line:
-                self.ad.log.info('AppController: %s is currently in foreground.', config.target_app_pkg)
+            if any(keyword in line for keyword in foreground_keywords) and config.package_name in line:
+                self.ad.log.info('AppController: %s is currently in foreground.', config.package_name)
                 return True
 
-        self.ad.log.error('AppController: %s is NOT in foreground.', config.target_app_pkg)
+        self.ad.log.error('AppController: %s is NOT in foreground.', config.package_name)
         return False
 
     def get_app_version(self, config: AppConfig) -> str | None:
@@ -188,18 +197,18 @@ class AppController:
         2. error handing by using try-except, call func is installed to do double check
         3. finally, check the version number in log
         """
-        self.ad.log.info('AppController: Executing %s version checking process ...', config.target_app_pkg)
+        self.ad.log.info('AppController: Executing %s version checking process ...', config.package_name)
         if not self.is_installed(config):
-            self.ad.log.error('AppController: %s is not installed, please check again.', config.target_app_pkg)
+            self.ad.log.error('AppController: %s is not installed, please check again.', config.package_name)
             return None
 
         try:
-            log_output = self.ad.adb.shell(['dumpsys', 'package', config.target_app_pkg])
+            log_output = self.ad.adb.shell(['dumpsys', 'package', config.package_name])
             
         except Exception as e:
             error_msg = str(e).lower()
             if 'offline' in error_msg or 'not found' in error_msg or 'disconnected' in error_msg:
-                self.ad.log.error('AppController: device disconnection, fail to get %s version...', config.target_app_pkg)
+                self.ad.log.error('AppController: device disconnection, fail to get %s version...', config.package_name)
                 raise RuntimeError(f"ADB connection error: {e}")
             
             self.ad.log.error('AppController: adb dumpsys command failed. Error: %s', e)
@@ -211,7 +220,7 @@ class AppController:
                 version = line.split('=')[1].strip()
                 return version
 
-        self.ad.log.error('AppController: Cannot get %s version, please try again', config.target_app_pkg)
+        self.ad.log.error('AppController: Cannot get %s version, please try again', config.package_name)
         return None
 
     def take_screenshot(self, dest_path: str) -> bool:

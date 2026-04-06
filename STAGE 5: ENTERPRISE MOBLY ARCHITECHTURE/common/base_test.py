@@ -19,3 +19,8 @@ class EnterpriseBaseTest(base_test.BaseTestClass):
         """ Dependency Injection: Create WifiController instance with the device """
         self.wifi_controller = WifiController(self.dut)
         self.app_controller = AppController(self.dut)
+
+    def teardown_class(self):
+        """ Global Teardown: Return to home screen after all tests are done """
+        self.dut.log.info("Executing EnterpriseBaseTest global teardown...")
+        self.dut.adb.shell(['input', 'keyevent', 'KEYCODE_HOME'])

@@ -1,11 +1,12 @@
 TestBeds:
-  - Name: EnterpriseTestBed
+  - Name: Google_Mobly_TestBed
     Controllers:
       AndroidDevice:
-        - serial: emulator-5554
+        - serial: "28011FQHN00214"
 
-UserParams:
-  wifi_ssid: "NoneExistWifi"
-  wifi_pwd: ""
-  target_app_pkg: "me.zhanghai.android.files"
-  test_app_path: "/Users/aaron/Desktop/Learning Roadmap & Progress/STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/tests/test_data/apks/me.zhanghai.android.files_37.apk"
+    TestParams:
+      wifi_ssid: "sheltercafe"
+      wifi_pwd: "shelter5118"
+      target_app_pkg: "com.darkempire78.opencalculator"
+      test_app_path: "/Users/aaron/Desktop/Learning Roadmap & Progress/STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/tests/test_data/apks/com.darkempire78.opencalculator_53.apk"
+      test_app_screenshot_path: "/Users/aaron/Desktop/Learning Roadmap & Progress/STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/screenshot"

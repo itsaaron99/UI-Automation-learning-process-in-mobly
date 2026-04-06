@@ -20,7 +20,7 @@ class WifiConnectionTest(EnterpriseBaseTest):
         1. Instantiate WifiConfig object (Fill out the form/proto)
         Retrieve parameters from config.yaml
         """
-        ssid = self.user_params.get('wifi_ssid', 'NoneExistWifi')
+        ssid = self.user_params.get('wifi_ssid', '')
         pwd = self.user_params.get('wifi_pwd', '')
 
         """ Debug Log """
@@ -58,6 +58,5 @@ class WifiConnectionTest(EnterpriseBaseTest):
         )
 
 if __name__ == '__main__':
-    # Remove the base class from the namespace to prevent Mobly from trying to run it
     del EnterpriseBaseTest
     test_runner.main()
