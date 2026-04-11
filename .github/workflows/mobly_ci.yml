@@ -39,7 +39,7 @@ jobs:
           arch: x86_64
           profile: Nexus 6
           # Replace this with the actual command to run your Stage 5 test script
-          script: python tests/your_test_script.py -c config/ci_config.yaml
+          script: python tests/test_app_management.py -c config/ci_config.yaml
 
       - name: Upload Test Results
         if: always() # Ensure logs are collected regardless of test success or failure
