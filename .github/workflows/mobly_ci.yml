@@ -1,0 +1,52 @@
+name: Mobly UI Automation CI
+
+on:
+  push:
+    branches: [ "master", "feature/setup-ci" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  test:
+    # macOS runners provide the best hardware acceleration (HAXM) support and performance for Android emulators
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # Adjust this based on your local development environment
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run Mobly Tests with Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+            api-level: 30
+            target: default
+            arch: x86_64
+            profile: Nexus 6
+            emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -accel on
+            script: |
+              adb install -g "STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/tests/test_data/apks/mobly-bundled-snippets.apk"
+              cd "STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE" && env PYTHONPATH="." python tests/test_app_management.py -c CI_config.yaml
+
+      - name: Upload Test Results
+        if: always() # Ensure logs are collected regardless of test success or failure
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobly-test-logs
+          # Make sure this path matches the log_path configured in your Mobly yaml file
+          path: /tmp/logs/

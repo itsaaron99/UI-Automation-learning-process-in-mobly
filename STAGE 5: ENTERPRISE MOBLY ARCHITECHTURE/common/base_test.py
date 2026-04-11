@@ -22,5 +22,6 @@ class EnterpriseBaseTest(base_test.BaseTestClass):
 
     def teardown_class(self):
         """ Global Teardown: Return to home screen after all tests are done """
-        self.dut.log.info("Executing EnterpriseBaseTest global teardown...")
-        self.dut.adb.shell(['input', 'keyevent', 'KEYCODE_HOME'])
+        if hasattr(self, 'dut'):
+            self.dut.log.info("Executing EnterpriseBaseTest global teardown...")
+            self.dut.adb.shell(['input', 'keyevent', 'KEYCODE_HOME'])
