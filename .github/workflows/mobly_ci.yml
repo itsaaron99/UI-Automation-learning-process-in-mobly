@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     # macOS runners provide the best hardware acceleration (HAXM) support and performance for Android emulators
-    runs-on: macos-latest 
+    runs-on: macos-13 
 
     steps:
       - name: Checkout code
