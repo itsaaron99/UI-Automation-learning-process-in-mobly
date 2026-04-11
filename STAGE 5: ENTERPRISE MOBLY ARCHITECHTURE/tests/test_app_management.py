@@ -1,3 +1,9 @@
+"""
+Execution:
+install -> launch app -> get app version -> take screen shot
+-> clear_data
+"""
+
 import sys
 import os
 
@@ -17,13 +23,8 @@ class AppManagementTest(EnterpriseBaseTest):
         self.apps_to_cleanup = []
 
     def test_launch_app_from_install_to_uninstall(self):
-        """
-        Execution:
-        install -> launch app -> get app version -> take screen shot
-        -> clear_data
-        """
-        pkg_name = self.user_params.get('target_app_pkg', 'me.zhanghai.android.files')
-        pkg_path = self.user_params.get('test_app_path')
+        pkg_name = self.user_params.get('target_app_pkg', '')
+        pkg_path = self.user_params.get('test_app_path', '')
         dest_path = self.user_params.get('test_app_screenshot_path')
         app_config = AppConfig(package_name=pkg_name, package_path=pkg_path, dest_path=dest_path)
         
