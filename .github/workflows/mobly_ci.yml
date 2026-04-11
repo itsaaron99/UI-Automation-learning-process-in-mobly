@@ -2,7 +2,7 @@ name: Mobly UI Automation CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "feature/setup-ci" ]
   pull_request:
     branches: [ "master" ]
 
