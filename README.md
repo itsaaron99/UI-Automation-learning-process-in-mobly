@@ -29,7 +29,7 @@ Skills Learned:
 ---
 
 ### Stage 3: Introduction to Android Automation (Mobly)
-**Status: In Progress**
+**Status: In Completed**
 
 Skills to Learn:
 * **Google Mobly Framework:** Understanding the lifecycle (`setup_class`, `teardown_class`, `test_*`).
@@ -41,7 +41,7 @@ Skills to Learn:
 ---
 
 ### Stage 4: Modularization & Logic Encapsulation
-**Status: In Progress**
+**Status: In Completed**
 
 Skills to Learn:
 * **Controller Pattern:** Separating test logic (Script) from device operations (Lib).
@@ -69,7 +69,7 @@ Skills to Learn:
 ---
 
 ### Stage 6: CI/CD & Pipeline Integration
-**Status: Planned**
+**Status: Completed**
 
 Skills to Learn:
 * Git for Teams (Branching & Merging)
