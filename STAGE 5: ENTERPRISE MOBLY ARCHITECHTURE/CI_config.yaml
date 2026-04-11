@@ -8,5 +8,5 @@ TestBeds:
       wifi_ssid: "sheltercafe"
       wifi_pwd: "shelter5118"
       target_app_pkg: "com.darkempire78.opencalculator"
-      test_app_path: "STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/tests/test_data/apks/com.darkempire78.opencalculator_53.apk"
-      test_app_screenshot_path: "STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/screenshot"
+      test_app_path: "tests/test_data/apks/com.darkempire78.opencalculator_53.apk"
+      test_app_screenshot_path: "screenshot"
