@@ -1,0 +1,5 @@
+TestBeds:
+  - Name: Google_Mobly_TestBed
+    Controllers:
+      AndroidDevice:
+        - serial: "emulator-5554"
