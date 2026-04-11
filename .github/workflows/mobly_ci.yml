@@ -40,10 +40,12 @@ jobs:
             profile: Nexus 6
             emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -accel on
             script: |
-                export PYTHONPATH="$PWD/STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE"
+                cd "STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE"
                 
-                python "STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/tests/test_app_management.py" -c "STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/config.yaml"
+                export PYTHONPATH="."
                 
+                python tests/test_app_management.py -c config.yaml  
+                              
       - name: Upload Test Results
         if: always() # Ensure logs are collected regardless of test success or failure
         uses: actions/upload-artifact@v4
