@@ -34,16 +34,16 @@ jobs:
       - name: Run Mobly Tests with Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30
-          target: default
-          arch: x86_64
-          profile: Nexus 6
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -accel on
-          script: |
-            export PYTHONPATH="STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE"
-            
-            python "STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/tests/test_app_management.py" -c "STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/config.yaml"
-            
+            api-level: 30
+            target: default
+            arch: x86_64
+            profile: Nexus 6
+            emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -accel on
+            script: |
+                export PYTHONPATH="$PWD/STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE"
+                
+                python "STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/tests/test_app_management.py" -c "STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/config.yaml"
+                
       - name: Upload Test Results
         if: always() # Ensure logs are collected regardless of test success or failure
         uses: actions/upload-artifact@v4
