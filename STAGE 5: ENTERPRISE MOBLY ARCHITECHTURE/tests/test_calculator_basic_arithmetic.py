@@ -55,15 +55,16 @@ class CalculatorTest(EnterpriseBaseTest):
 
 
         #click on '1' '2' -> '+' -> '3' '8' -> '=' on calculator
-        self.dut.log.info('Executing PIXEL_6_CALC_COORDS button ui button clicking...')
-        self.ui_controller.click(*PIXEL_6_CALC_COORDS['1'])
-        self.ui_controller.click(*PIXEL_6_CALC_COORDS['2'])
-        self.ui_controller.click(*PIXEL_6_CALC_COORDS['+'])
-        self.ui_controller.click(*PIXEL_6_CALC_COORDS['3'])
-        self.ui_controller.click(*PIXEL_6_CALC_COORDS['8'])
-        self.ui_controller.click(*PIXEL_6_CALC_COORDS['='])
-        time.sleep(UI_DEFAULT_WAIT_SEC_3)
-
+        # 12 + 38 = 50
+        self.dut.log.info("Typing: 12 + 38 =")
+        self.ui_controller.click_by_id(CALC_BTN_1)
+        self.ui_controller.click_by_id(CALC_BTN_2)
+        self.ui_controller.click_by_id(CALC_BTN_ADD)
+        self.ui_controller.click_by_id(CALC_BTN_3)
+        self.ui_controller.click_by_id(CALC_BTN_8)
+        self.ui_controller.click_by_id(CALC_BTN_EQUAL)
+        time.sleep(UI_DEFAULT_WAIT_SEC_1)
+        
         #verificaiton of calculation matches the expection
         self.dut.log.info("Verifying if the result... ")
         act_result = self.ui_controller.get_text_by_id(CALC_RES_ID_RESULT)

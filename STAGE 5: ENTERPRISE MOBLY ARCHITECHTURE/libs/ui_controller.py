@@ -9,7 +9,7 @@ Args:
     ad_device (AndroidDevice): The Mobly AndroidDevice object to interact with.
 """
 import xml.etree.ElementTree as ET
-
+import re
 
 class UIController:
 
@@ -125,38 +125,48 @@ class UIController:
             self.ad.log.error('UIController: Fail to press enter. error: %s', e)
             return False
 
-    def get_text_by_id(self, resource_id: str) -> str:
-            """Dumps the current screen UI hierarchy via ADB and extracts the text content.
+    def click_by_id(self, resource_id: str) -> bool:
+            """Finds an element by resource-id on the screen and clicks its center point.
 
             Args:
-                resource_id: The ID of the UI element (e.g., 'com.darkempire78.opencalculator:id/input').
+                resource_id: The ID of the UI element to click.
 
             Returns:
-                str: The extracted text. Returns an empty string if not found.
+                True if the click was successful, False otherwise.
             """
-            self.ad.log.info('UIController: Scanning the screen via ADB for text with ID [%s]...', resource_id)
+            self.ad.log.info('UIController: Trying to click element with ID [%s]...', resource_id)
 
             try:
-                # 1. Dump UI hierarchy to a temporary file
+                # 1. Dump UI hierarchy
                 self.ad.adb.shell(['uiautomator', 'dump', '/data/local/tmp/window_dump.xml'])
-                
-                # 2. Read the dumped XML content
                 xml_content = self.ad.adb.shell(['cat', '/data/local/tmp/window_dump.xml']).decode('utf-8')
                 
-                # 3. Use a standard XML parser to ignore attribute order
+                # 2. Parse XML tree
                 root = ET.fromstring(xml_content)
                 
-                # Iterate through all UI nodes to find the matching resource-id
+                # 3. Find the node
                 for node in root.iter('node'):
                     if node.attrib.get('resource-id') == resource_id:
-                        found_text = node.attrib.get('text', '')
-                        self.ad.log.info('UIController: Successfully found text -> %s', found_text)
-                        return found_text
+                        bounds_str = node.attrib.get('bounds', '')
+                        self.ad.log.info('UIController: Found element! Bounds: %s', bounds_str)
+                        
+                        # 4. Extract coordinates from bounds="[x1,y1][x2,y2]"
+                        # re.findall('\d+') will extract all numbers into a list: ['x1', 'y1', 'x2', 'y2']
+                        coords = re.findall(r'\d+', bounds_str)
+                        if len(coords) == 4:
+                            x1, y1, x2, y2 = map(int, coords)
+                            
+                            # 5. Calculate the center point
+                            center_x = (x1 + x2) // 2
+                            center_y = (y1 + y2) // 2
+                            
+                            self.ad.log.info('UIController: Calculated center point at (%d, %d). Clicking now...', center_x, center_y)
+                            # 6. Reuse your existing absolute click method
+                            return self.click(center_x, center_y)
+                        
+                self.ad.log.warning('UIController: Could not find element [%s] to click.', resource_id)
+                return False
                 
-                # Return an empty string if the entire tree is traversed without a match
-                self.ad.log.warning('UIController: ID [%s] not found on the screen.', resource_id)
-                return ""
-                    
             except Exception as e:
-                self.ad.log.error('UIController: Error occurred while extracting screen text: %s', e)
-                return ""
+                self.ad.log.error('UIController: Failed to click by ID. Error: %s', e)
+                return False
