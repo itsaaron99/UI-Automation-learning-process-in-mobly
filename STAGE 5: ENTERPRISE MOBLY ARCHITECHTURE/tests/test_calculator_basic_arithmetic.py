@@ -6,7 +6,7 @@ from mobly import test_runner
 from mobly import asserts
 from common.base_test import EnterpriseBaseTest
 from data_models.app_protos import AppConfig
-from tests.constants import EXP_RESULT, PIXEL_6_CALC_COORDS, CALC_RES_ID_RESULT, UI_DEFAULT_WAIT_SEC_1, UI_DEFAULT_WAIT_SEC_3
+from tests.constants import EXP_RESULT, CALC_RES_ID_RESULT, UI_DEFAULT_WAIT_SEC_3, UI_DEFAULT_WAIT_SEC_1, CALC_BTN_1, CALC_BTN_2, CALC_BTN_3, CALC_BTN_8, CALC_BTN_ADD, CALC_BTN_EQUAL
 import time
 
 class CalculatorTest(EnterpriseBaseTest):
@@ -57,14 +57,14 @@ class CalculatorTest(EnterpriseBaseTest):
         #click on '1' '2' -> '+' -> '3' '8' -> '=' on calculator
         # 12 + 38 = 50
         self.dut.log.info("Typing: 12 + 38 =")
-        self.ui_controller.click_by_id(CALC_BTN_1)
-        self.ui_controller.click_by_id(CALC_BTN_2)
-        self.ui_controller.click_by_id(CALC_BTN_ADD)
-        self.ui_controller.click_by_id(CALC_BTN_3)
-        self.ui_controller.click_by_id(CALC_BTN_8)
-        self.ui_controller.click_by_id(CALC_BTN_EQUAL)
-        time.sleep(UI_DEFAULT_WAIT_SEC_1)
-        
+        asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_1), "Failed to click button '1'")
+        asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_2), "Failed to click button '2'")
+        asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_ADD), "Failed to click button '+'")
+        asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_3), "Failed to click button '3'")
+        asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_8), "Failed to click button '8'")
+        asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_EQUAL), "Failed to click button '='")
+        time.sleep(UI_DEFAULT_WAIT_SEC_3)
+
         #verificaiton of calculation matches the expection
         self.dut.log.info("Verifying if the result... ")
         act_result = self.ui_controller.get_text_by_id(CALC_RES_ID_RESULT)
