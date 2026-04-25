@@ -2,6 +2,8 @@ from mobly import base_test
 from mobly.controllers import android_device
 from libs.wifi_controller import WifiController
 from libs.app_controller import AppController
+from libs.ui_controller import UIController
+
 
 class EnterpriseBaseTest(base_test.BaseTestClass):
     """
@@ -19,6 +21,7 @@ class EnterpriseBaseTest(base_test.BaseTestClass):
         """ Dependency Injection: Create WifiController instance with the device """
         self.wifi_controller = WifiController(self.dut)
         self.app_controller = AppController(self.dut)
+        self.ui_controller = UIController(self.dut)
 
     def teardown_class(self):
         """ Global Teardown: Return to home screen after all tests are done """
