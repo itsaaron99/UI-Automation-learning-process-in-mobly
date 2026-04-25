@@ -1,10 +1,20 @@
 """
-TODO:
-1. Add clear_data() - done
-2. Add launch_app() - done
-3. Add get_app_version() - done
-4. Add take_screenshot()
-5. Add is_app_in_foreground() - done
+AppController
+
+This controller handles Android application management and lifecycle operations
+using Android Debug Bridge (ADB) commands. It acts as a wrapper to perform 
+common app-related tasks securely with built-in error handling and logging.
+
+Args:
+    ad_device (AndroidDevice): The Mobly AndroidDevice object to interact with.
+
+Dependencies:
+    AppConfig: A dataclass model containing application details (e.g., package_name, package_path).
+
+Core Functions:
+    - App lifecycle: install, uninstall, launch_app, force_stop, clear_data
+    - App inspection: is_installed, is_app_in_foreground, get_app_version
+    - Device UI: take_screenshot
 """
 from data_models.app_protos import AppConfig
 import time
@@ -12,11 +22,21 @@ import time
 class AppController:
 
     def __init__(self, ad_device):
+        """Initializes the AppController with a Mobly AndroidDevice.
+
+        Args:
+            ad_device (AndroidDevice): The Mobly AndroidDevice object to interact with.
+        """
         self.ad = ad_device
 
     def is_installed(self, config: AppConfig) -> bool:
-        """ Checks if the specified package is installed by ADB commands, 
-        (list and filter by name) 
+        """Checks if the specified package is installed via ADB.
+
+        Args:
+            config: An AppConfig object containing the target package_name.
+
+        Returns:
+            True if the package is installed, False otherwise.
         """
         self.ad.log.info('AppController: Checking if %s is installed...', config.package_name)
 
@@ -33,12 +53,26 @@ class AppController:
             return False
 
     def force_stop(self, config: AppConfig):
-        """ Force stops the specified package """
+        """Force stops the specified package.
+
+        Args:
+            config: An AppConfig object containing the target package_name.
+        """
         self.ad.log.info('AppController: Force stopping %s ...', config.package_name)
         self.ad.adb.shell(f'am force-stop {config.package_name}')
 
     def install(self, config: AppConfig) -> bool:
-        """ install apk through ADB command and calls "is_installed" func to do double check """
+        """Installs an APK through ADB and verifies the installation.
+
+        Args:
+            config: An AppConfig object containing the package_name and package_path.
+
+        Returns:
+            True if the installation was successful and verified, False otherwise.
+
+        Raises:
+            RuntimeError: If the device gets disconnected or goes offline.
+        """
         self.ad.log.info('AppController: Start installing APK %s', config.package_name)
 
         try:
@@ -56,10 +90,16 @@ class AppController:
         return self.is_installed(config)
 
     def uninstall(self, config: AppConfig) -> bool:
-        """
-        step 1: check if the apk doesn't exist, return True directly
-        step 2: execute the adb command, using try-except to do error handing
-        step 3: if the apk has been un-installed, return true, else false.
+        """Uninstalls the specified package via ADB.
+
+        Args:
+            config: An AppConfig object containing the target package_name.
+
+        Returns:
+            True if the uninstallation was successful or already uninstalled, False otherwise.
+
+        Raises:
+            RuntimeError: If the device gets disconnected or goes offline.
         """
         self.ad.log.info('AppController: Start uninstalling APK %s', config.package_name)
         if not self.is_installed(config):
@@ -89,10 +129,16 @@ class AppController:
         return True
     
     def clear_data(self, config: AppConfig) -> bool:
-        """
-        Step 1: call isinstalled(), if false, use log error
-        Step 2: execute the ADB command, using try-except to do error handing
-        Step 3: secure the success msg
+        """Clears all app data for the specified package.
+
+        Args:
+            config: An AppConfig object containing the target package_name.
+
+        Returns:
+            True if data was successfully cleared, False otherwise.
+
+        Raises:
+            RuntimeError: If the device gets disconnected or goes offline.
         """
         self.ad.log.info('AppController: Executing %s data cleaning proccess...', config.package_name)
         if not self.is_installed(config):
@@ -121,11 +167,16 @@ class AppController:
         return False
 
     def launch_app(self, config: AppConfig) -> bool:
-        """
-        1. check if app is installed
-        2. using try-except to execute the ABD command: 
-           "adb shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1"
-        3. call func is_app_in_foreground() to check if app has been activated.
+        """Launches the specified app using the monkey command and waits for it to open.
+
+        Args:
+            config: An AppConfig object containing the target package_name.
+
+        Returns:
+            True if the app was successfully launched and brought to foreground, False otherwise.
+
+        Raises:
+            RuntimeError: If the device gets disconnected or goes offline.
         """
         self.ad.log.info('AppController: Launching %s...', config.package_name)
         if not self.is_installed(config):
@@ -157,12 +208,16 @@ class AppController:
         return False
 
     def is_app_in_foreground(self, config: AppConfig) -> bool:
-        """
-        Check if app is in foreground, will not return errors.
-        1. ADB command: adb shell dumpsys activity activities
-        2. Catch log of config.target_app_pkg by using decode handeling, else str()
-           Log examples:
-           mResumedActivity: ActivityRecord{... com.android.settings/.Settings ...}
+        """Checks if the specified app is currently running in the foreground.
+
+        Args:
+            config: An AppConfig object containing the target package_name.
+
+        Returns:
+            True if the target app is in the foreground, False otherwise.
+
+        Raises:
+            RuntimeError: If the device gets disconnected or goes offline.
         """
         self.ad.log.info('AppController: Checking if %s in foreground...', config.package_name)
 
@@ -192,10 +247,16 @@ class AppController:
         return False
 
     def get_app_version(self, config: AppConfig) -> str | None:
-        """
-        1. ADB command: adb shell dumpsys package {package_name}, capturing "versionName=1.2.0"
-        2. error handing by using try-except, call func is installed to do double check
-        3. finally, check the version number in log
+        """Retrieves the version name of the specified installed app.
+
+        Args:
+            config: An AppConfig object containing the target package_name.
+
+        Returns:
+            The version string (e.g., '1.2.0') if found, or None if the app is not installed or version not found.
+
+        Raises:
+            RuntimeError: If the device gets disconnected or goes offline.
         """
         self.ad.log.info('AppController: Executing %s version checking process ...', config.package_name)
         if not self.is_installed(config):
@@ -224,16 +285,16 @@ class AppController:
         return None
 
     def take_screenshot(self, dest_path: str) -> bool:
-        """
-        Using try-except-finally to do error handing
-        1. Take screenshot on device
-            ADB command: adb shell screencap -p /sdcard/temp_screen.png
+        """Takes a screenshot of the current device screen and pulls it to the local machine.
 
-        2. Pull the file to local Mac
-            ADB command: adb pull /sdcard/temp_screen.png {dest_path}
+        Args:
+            dest_path: The local file path where the screenshot will be saved.
 
-        3. Remove the temporary file from device (MUST execute)
-            ADB command: adb shell rm /sdcard/temp_screen.png
+        Returns:
+            True if the screenshot was successfully taken and pulled, False otherwise.
+
+        Raises:
+            RuntimeError: If the device gets disconnected or goes offline.
         """
         self.ad.log.info('AppController: Taking screenshot and saving to %s... ', dest_path)
 
