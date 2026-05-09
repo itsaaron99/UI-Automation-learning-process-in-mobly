@@ -12,6 +12,7 @@ import time
 class CalculatorTest(EnterpriseBaseTest):
 
     def setup_class(self):
+        super().setup_class()
         pkg_name = self.user_params.get('target_app_pkg', '')
         pkg_path = self.user_params.get('test_app_path', '')
         dest_path = self.user_params.get('test_app_screenshot_path')
@@ -122,9 +123,11 @@ class CalculatorTest(EnterpriseBaseTest):
             self.dut.log.info("Cleaning up app: %s", self.app_config.package_name)
             self.app_controller.clear_data(self.app_config)
             uninstall_result = self.app_controller.uninstall(self.app_config)
-            
+
             if not uninstall_result:
                 self.dut.log.warning("Failed to uninstall %s during teardown.", self.app_config.package_name)
+                
+        super().teardown_class()
 
 if __name__ == '__main__':
     del EnterpriseBaseTest
