@@ -24,8 +24,8 @@ class CalculatorTest(EnterpriseBaseTest):
             asserts.assert_true(install_result, f"Expected app {pkg_name} to be installed, but failed")
 
         #launch app
-        if not self.app_controller.is_app_in_foreground(app_config):
-            launch_result = self.app_controller.launch_app(app_config)
+        if not self.app_controller.is_app_in_foreground(self.app_config):
+            launch_result = self.app_controller.launch_app(self.app_config)
             asserts.assert_true(launch_result, f"Expected app {pkg_name} to be launched, but failed")
         self.dut.log.info(f'App: {pkg_name} has been launched successfully.')
         time.sleep(UI_DEFAULT_WAIT_SEC_1)
