@@ -19,13 +19,9 @@ class CalculatorTest(EnterpriseBaseTest):
         self.app_config = AppConfig(package_name=pkg_name, package_path=pkg_path, dest_path=dest_path)
 
         #check if app is installed aready, else install first and launch it.
-        if not self.app_controller.is_installed(app_config):
-            install_result = self.app_controller.install(app_config)
+        if not self.app_controller.is_installed(self.app_config):
+            install_result = self.app_controller.install(self.app_config)
             asserts.assert_true(install_result, f"Expected app {pkg_name} to be installed, but failed")
-
-        # Add app_config into the cleanup list for tear down test
-        self.apps_to_cleanup.append(app_config)
-        self.dut.log.info("App exists and is installed successfully!")
 
         #launch app
         if not self.app_controller.is_app_in_foreground(app_config):
@@ -126,7 +122,7 @@ class CalculatorTest(EnterpriseBaseTest):
 
             if not uninstall_result:
                 self.dut.log.warning("Failed to uninstall %s during teardown.", self.app_config.package_name)
-                
+
         super().teardown_class()
 
 if __name__ == '__main__':
