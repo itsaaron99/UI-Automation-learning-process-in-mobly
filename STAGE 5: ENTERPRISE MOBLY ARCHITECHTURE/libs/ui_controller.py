@@ -9,6 +9,7 @@ Args:
     ad_device (AndroidDevice): The Mobly AndroidDevice object to interact with.
 """
 import xml.etree.ElementTree as ET
+import re
 
 
 class UIController:
@@ -137,13 +138,13 @@ class UIController:
             self.ad.log.info('UIController: Scanning the screen via ADB for text with ID [%s]...', resource_id)
 
             try:
-                # 1. Dump UI hierarchy to a temporary file
+                # Dump UI hierarchy to a temporary file
                 self.ad.adb.shell(['uiautomator', 'dump', '/data/local/tmp/window_dump.xml'])
                 
-                # 2. Read the dumped XML content
+                # Read the dumped XML content
                 xml_content = self.ad.adb.shell(['cat', '/data/local/tmp/window_dump.xml']).decode('utf-8')
                 
-                # 3. Use a standard XML parser to ignore attribute order
+                # Use a standard XML parser to ignore attribute order
                 root = ET.fromstring(xml_content)
                 
                 # Iterate through all UI nodes to find the matching resource-id
@@ -170,36 +171,34 @@ class UIController:
         Returns:
             True if the click was successful, False otherwise.
         """
-        import xml.etree.ElementTree as ET
-        import re
         self.ad.log.info('UIController: Trying to click element with ID [%s]...', resource_id)
 
         try:
-            # 1. Dump UI hierarchy
+            # Dump UI hierarchy
             self.ad.adb.shell(['uiautomator', 'dump', '/data/local/tmp/window_dump.xml'])
             xml_content = self.ad.adb.shell(['cat', '/data/local/tmp/window_dump.xml']).decode('utf-8')
             
-            # 2. Parse XML tree
+            # Parse XML tree
             root = ET.fromstring(xml_content)
             
-            # 3. Find the node
+            # Find the node
             for node in root.iter('node'):
                 if node.attrib.get('resource-id') == resource_id:
                     bounds_str = node.attrib.get('bounds', '')
                     self.ad.log.info('UIController: Found element! Bounds: %s', bounds_str)
                     
-                    # 4. Extract coordinates from bounds="[x1,y1][x2,y2]"
+                    # Extract coordinates from bounds="[x1,y1][x2,y2]"
                     # re.findall('\d+') will extract all numbers into a list: ['x1', 'y1', 'x2', 'y2']
                     coords = re.findall(r'\d+', bounds_str)
                     if len(coords) == 4:
                         x1, y1, x2, y2 = map(int, coords)
                         
-                        # 5. Calculate the center point
+                        # Calculate the center point
                         center_x = (x1 + x2) // 2
                         center_y = (y1 + y2) // 2
                         
                         self.ad.log.info('UIController: Calculated center point at (%d, %d). Clicking now...', center_x, center_y)
-                        # 6. Reuse your existing absolute click method
+                        # Reuse your existing absolute click method
                         return self.click(center_x, center_y)
                     
             self.ad.log.warning('UIController: Could not find element [%s] to click.', resource_id)
@@ -207,4 +206,60 @@ class UIController:
             
         except Exception as e:
             self.ad.log.error('UIController: Failed to click by ID. Error: %s', e)
+            return False
+
+    def long_click_by_id(self, resource_id: str, duration_ms: int = 1000) -> bool:
+        """Finds an element by resource-id on the screen and performs a long click.
+
+        This method dynamically calculates the center point of the UI element,
+        making it resolution-independent across all Android devices (e.g., Pixel series).
+
+        Args:
+            resource_id: The ID of the UI element defined in the XML hierarchy.
+            duration_ms: The press duration in milliseconds. Defaults to 1000ms.
+                According to Android UX guidelines, duration must be > 500ms 
+                to trigger an 'onLongClick' event instead of a standard click.
+
+        Returns:
+            True if the long click was executed successfully, False if the 
+            element was not found or an error occurred.
+            
+        Raises:
+            RuntimeError: If the device gets disconnected or goes offline.
+        """
+        self.ad.log.info('UIController: Trying to execute long click with ID [%s]...', resource_id)
+
+        try:
+            # Dump UI hierarchy
+            self.ad.adb.shell(['uiautomator', 'dump', '/data/local/tmp/window_dump.xml'])
+            xml_content = self.ad.adb.shell(['cat', '/data/local/tmp/window_dump.xml']).decode('utf-8')
+            
+            # Parse XML tree
+            root = ET.fromstring(xml_content)
+            
+            # Find the node
+            for node in root.iter('node'):
+                if node.attrib.get('resource-id') == resource_id:
+                    bounds_str = node.attrib.get('bounds', '')
+                    self.ad.log.info('UIController: Found element! Bounds: %s', bounds_str)
+                    
+                    # Extract coordinates from bounds="[x1,y1][x2,y2]"
+                    # re.findall('\d+') will extract all numbers into a list: ['x1', 'y1', 'x2', 'y2']
+                    coords = re.findall(r'\d+', bounds_str)
+                    if len(coords) == 4:
+                        x1, y1, x2, y2 = map(int, coords)
+                        
+                        # Calculate the center point
+                        center_x = (x1 + x2) // 2
+                        center_y = (y1 + y2) // 2
+                        
+                        self.ad.log.info('UIController: Calculated center point at (%d, %d). Long clicking now...', center_x, center_y)
+                        # Reuse your existing absolute click method
+                        return self.long_click(center_x, center_y, duration_ms=duration_ms)
+                    
+            self.ad.log.warning('UIController: Could not find element [%s] to long click.', resource_id)
+            return False
+            
+        except Exception as e:
+            self.ad.log.error('UIController: Failed to long click by ID. Error: %s', e)
             return False
