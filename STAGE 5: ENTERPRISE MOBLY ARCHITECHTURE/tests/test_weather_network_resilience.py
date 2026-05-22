@@ -15,7 +15,7 @@ from tests.constants import (
 )
 import time
 
-class WeatherNetworkTest(EnterpriseBaseTest):
+class ChromeNetworkTest(EnterpriseBaseTest):
     
     def setup_class(self):
         super().setup_class()
