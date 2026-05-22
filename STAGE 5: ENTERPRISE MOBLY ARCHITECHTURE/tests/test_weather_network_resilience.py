@@ -11,7 +11,8 @@ from tests.constants import (
     UI_DEFAULT_WAIT_SEC_1, 
     CHROME_PKG_NAME, 
     CHROME_ID_SEARCH_BOX, 
-    CHROME_OFFLINE_TEXT
+    CHROME_OFFLINE_TEXT,
+    UI_DEFAULT_WAIT_SEC_5
 )
 import time
 
@@ -40,7 +41,7 @@ class ChromeNetworkTest(EnterpriseBaseTest):
                             f'Expect launching {self.app_config} but fail...')
         # disconnect Wifi
         self.dut.mbs.wifiDisable()
-        time.sleep(UI_DEFAULT_WAIT_SEC_1)
+        time.sleep(UI_DEFAULT_WAIT_SEC_5)
         # refresh current web page by searching under network is offline
         asserts.assert_true(self.ui_controller.click_by_id(CHROME_ID_SEARCH_BOX), 'Expect clicking on search box but fail...')
         self.dut.adb.shell("input text 'mobly'")
@@ -56,7 +57,7 @@ class ChromeNetworkTest(EnterpriseBaseTest):
 
     def teardown_class(self):
         self.dut.log.info("=== Teardown_class: Starting Teardown ===")
-        self.ui_controller.clear_data(self.app_config)
+        self.app_controller.clear_data(self.app_config)
         super().teardown_class()
 
 if __name__ == '__main__':
