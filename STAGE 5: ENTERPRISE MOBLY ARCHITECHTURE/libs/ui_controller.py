@@ -10,6 +10,7 @@ Args:
 """
 import xml.etree.ElementTree as ET
 import re
+import time
 
 
 class UIController:
@@ -127,40 +128,76 @@ class UIController:
             return False
 
     def get_text_by_id(self, resource_id: str) -> str:
-            """Dumps the current screen UI hierarchy via ADB and extracts the text content.
+        """Dumps the current screen UI hierarchy via ADB and extracts the text content.
 
-            Args:
-                resource_id: The ID of the UI element (e.g., 'com.darkempire78.opencalculator:id/input').
+        Args:
+            resource_id: The ID of the UI element (e.g., 'com.darkempire78.opencalculator:id/input').
 
-            Returns:
-                str: The extracted text. Returns an empty string if not found.
-            """
-            self.ad.log.info('UIController: Scanning the screen via ADB for text with ID [%s]...', resource_id)
+        Returns:
+            str: The extracted text. Returns an empty string if not found.
+        """
+        self.ad.log.info('UIController: Scanning the screen via ADB for text with ID [%s]...', resource_id)
 
-            try:
-                # Dump UI hierarchy to a temporary file
-                self.ad.adb.shell(['uiautomator', 'dump', '/data/local/tmp/window_dump.xml'])
+        try:
+            # Dump UI hierarchy to a temporary file
+            self.ad.adb.shell(['uiautomator', 'dump', '/data/local/tmp/window_dump.xml'])
+            
+            # Read the dumped XML content
+            xml_content = self.ad.adb.shell(['cat', '/data/local/tmp/window_dump.xml']).decode('utf-8')
+            
+            # Use a standard XML parser to ignore attribute order
+            root = ET.fromstring(xml_content)
+            
+            # Iterate through all UI nodes to find the matching resource-id
+            for node in root.iter('node'):
+                if node.attrib.get('resource-id') == resource_id:
+                    found_text = node.attrib.get('text', '')
+                    self.ad.log.info('UIController: Successfully found text -> %s', found_text)
+                    return found_text
+            
+            # Return an empty string if the entire tree is traversed without a match
+            self.ad.log.warning('UIController: ID [%s] not found on the screen.', resource_id)
+            return ""
                 
-                # Read the dumped XML content
-                xml_content = self.ad.adb.shell(['cat', '/data/local/tmp/window_dump.xml']).decode('utf-8')
+        except Exception as e:
+            self.ad.log.error('UIController: Error occurred while extracting screen text: %s', e)
+            return ""
+
+    def get_text_by_text(self, text: str) -> str:
+        """Dumps the current screen UI hierarchy via ADB and extracts the text content.
+
+        Args:
+            resource_id: The ID of the UI element (e.g., 'com.darkempire78.opencalculator:id/input').
+
+        Returns:
+            str: The extracted text. Returns an empty string if not found.
+        """
+        self.ad.log.info('UIController: Scanning the screen via ADB for text with ID [%s]...', text)
+
+        try:
+            # Dump UI hierarchy to a temporary file
+            self.ad.adb.shell(['uiautomator', 'dump', '/data/local/tmp/window_dump.xml'])
+            
+            # Read the dumped XML content
+            xml_content = self.ad.adb.shell(['cat', '/data/local/tmp/window_dump.xml']).decode('utf-8')
+            
+            # Use a standard XML parser to ignore attribute order
+            root = ET.fromstring(xml_content)
+            
+            # Iterate through all UI nodes to find the matching resource-id
+            for node in root.iter('node'):
+                if node.attrib.get('text') == text:
+                    found_text = node.attrib.get('text', '')
+                    self.ad.log.info('UIController: Successfully found text -> %s', found_text)
+                    return found_text
+            
+            # Return an empty string if the entire tree is traversed without a match
+            self.ad.log.warning('UIController: Text [%s] not found on the screen.', text)
+            return ""
                 
-                # Use a standard XML parser to ignore attribute order
-                root = ET.fromstring(xml_content)
-                
-                # Iterate through all UI nodes to find the matching resource-id
-                for node in root.iter('node'):
-                    if node.attrib.get('resource-id') == resource_id:
-                        found_text = node.attrib.get('text', '')
-                        self.ad.log.info('UIController: Successfully found text -> %s', found_text)
-                        return found_text
-                
-                # Return an empty string if the entire tree is traversed without a match
-                self.ad.log.warning('UIController: ID [%s] not found on the screen.', resource_id)
-                return ""
-                    
-            except Exception as e:
-                self.ad.log.error('UIController: Error occurred while extracting screen text: %s', e)
-                return ""
+        except Exception as e:
+            self.ad.log.error('UIController: Error occurred while extracting screen text: %s', e)
+            return ""
 
     def click_by_id(self, resource_id: str) -> bool:
         """Finds an element by resource-id on the screen and clicks its center point.
@@ -263,3 +300,57 @@ class UIController:
         except Exception as e:
             self.ad.log.error('UIController: Failed to long click by ID. Error: %s', e)
             return False
+
+    def wait_for_element_by_ui(self, timeout: int, resource_id: str) -> bool:
+        """Waits for an element to appear on the screen within the timeout.
+        
+        This implements an explicit wait (polling mechanism) to avoid flaky 
+        tests caused by UI rendering delays or network latency.
+
+        Args:
+            resource_id: The ID of the UI element to wait for.
+            timeout: The maximum waiting time in seconds. Defaults to 10.
+
+        Returns:
+            True if the element is found within the timeout, False otherwise.
+        
+        Raises:
+            RuntimeError: If the device gets disconnected or goes offline.
+        """
+        polling_freq = 0.5
+        start_time = time.time()
+        while (time.time() - start_time) < timeout:
+            # strictly check for `not False` to prevent empty string "" (falsy) 
+            # from being incorrectly treated as element not found.            
+            get_text_result = self.get_text_by_id(resource_id)
+            if get_text_result is not None:
+                return True
+            time.sleep(polling_freq)
+        self.ad.log.info('UIController: Failed to find element [%s] after %d seconds.', resource_id, timeout)
+        return False
+
+    def wait_for_element_by_text(self, time_out: int, text: str) -> bool:
+        """Waits for an element to appear on the screen within the timeout for non resource_id
+        
+        This implements an explicit wait (polling mechanism) to avoid flaky 
+        tests caused by text rendering delays or network latency.
+
+        Args:
+            text: The ID of the test element to wait for.
+            timeout: The maximum waiting time in seconds. Defaults to 10.
+
+        Returns:
+            True if the element is found within the timeout, False otherwise.
+        
+        Raises:
+            RuntimeError: If the device gets disconnected or goes offline.
+        """
+        polling_freq = 0.5
+        start_time = time.time()
+        while (time.time() - start_time) < time_out:
+            get_text_result = self.get_text_by_text(text)
+            if get_text_result != "":
+                return True
+            time.sleep(polling_freq)
+        self.ad.log.info('UIController: Failed to find element [%s] after %d seconds.', text, time_out)
+        return False

@@ -11,3 +11,4 @@ class AppConfig:
     package_name: str
     package_path: Optional[str] = None
     dest_path: Optional[str] = None
+    requires_network: bool = False

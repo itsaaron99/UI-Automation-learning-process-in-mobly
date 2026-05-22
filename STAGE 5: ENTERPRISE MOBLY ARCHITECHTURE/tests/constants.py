@@ -5,6 +5,13 @@ This module holds shared constant values used across different test cases,
 such as UI element IDs, coordinates, and default timeouts.
 """
 
+# Additional test data
+# List with tuples
+ADDITION_TEST_DATA = [
+    (CALC_BTN_1, CALC_BTN_2, "3"),
+    (CALC_BTN_3, CALC_BTN_8, "11"),
+    (CALC_BTN_8, CALC_BTN_2, "10"),
+]
 # Expect calculation result
 EXP_RESULT = '50'
 RESET_RESULT = ''
@@ -27,3 +34,12 @@ CALC_BTN_8 = "com.darkempire78.opencalculator:id/eightButton"
 CALC_BTN_ADD = "com.darkempire78.opencalculator:id/addButton"
 CALC_BTN_EQUAL = "com.darkempire78.opencalculator:id/equalsButton"
 CALC_BTN_DEL = "com.darkempire78.opencalculator:id/backspaceButton"
+
+# === Google Chrome Constants ===
+CHROME_PKG_NAME = "com.android.chrome"
+#home page
+CHROME_ID_SEARCH_BOX = "com.android.chrome:id/search_box_text"
+#url bar
+CHROME_ID_URL_BAR = "com.android.chrome:id/url_bar"
+CHROME_OFFLINE_TEXT = "You are offline"
+CHROME_ERROR_CODE = "ERR_INTERNET_DISCONNECTED"

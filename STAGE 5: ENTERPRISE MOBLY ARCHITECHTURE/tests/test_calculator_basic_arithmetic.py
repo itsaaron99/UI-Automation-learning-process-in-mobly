@@ -6,7 +6,7 @@ from mobly import test_runner
 from mobly import asserts
 from common.base_test import EnterpriseBaseTest
 from data_models.app_protos import AppConfig
-from tests.constants import EXP_RESULT, RESET_RESULT, CALC_RES_ID_RESULT, UI_DEFAULT_WAIT_SEC_3, UI_DEFAULT_WAIT_SEC_1, CALC_BTN_1, CALC_BTN_2, CALC_BTN_3, CALC_BTN_8, CALC_BTN_ADD, CALC_BTN_EQUAL, CALC_BTN_DEL
+from tests.constants import EXP_RESULT, RESET_RESULT, CALC_RES_ID_RESULT, UI_DEFAULT_WAIT_SEC_3, UI_DEFAULT_WAIT_SEC_1, CALC_BTN_1, CALC_BTN_2, CALC_BTN_3, CALC_BTN_8, CALC_BTN_ADD, CALC_BTN_EQUAL, CALC_BTN_DEL, ADDITION_TEST_DATA
 import time
 
 class CalculatorTest(EnterpriseBaseTest):
@@ -28,13 +28,20 @@ class CalculatorTest(EnterpriseBaseTest):
             launch_result = self.app_controller.launch_app(self.app_config)
             asserts.assert_true(launch_result, f"Expected app {pkg_name} to be launched, but failed")
         self.dut.log.info(f'App: {pkg_name} has been launched successfully.')
-        time.sleep(UI_DEFAULT_WAIT_SEC_1)
+        self.ui_controller.wait_for_element_by_ui(UI_DEFAULT_WAIT_SEC_1)
+
+    def setup_generated_tests(self):
+        self.generate_tests(
+            test_logic=logic_calculator_addition,
+            name_func=lambda _, _, expected_res: f"test_dynamic_addition_{expected_res}",
+            arg_sets=ADDITION_TEST_DATA
+        )
 
     def setup_test(self):
         """Runs on every TC, which will reset the calculator """
         self.dut.log.info("Setup Test: Reseting the calculator...")
         asserts.assert_true(self.ui_controller.long_click_by_id(CALC_BTN_DEL), "Failed to reset...")
-        time.sleep(UI_DEFAULT_WAIT_SEC_1)
+        self.ui_controller.wait_for_element_by_id(UI_DEFAULT_WAIT_SEC_1)
         #check if text is empty
         current_text = self.ui_controller.get_text_by_id(CALC_RES_ID_RESULT)
         asserts.assert_equal(
@@ -44,7 +51,9 @@ class CalculatorTest(EnterpriseBaseTest):
         )
 
     def test_calculator_basic_addition(self):
-        """Verifies basic arithmetic addition functionality via UI interactions.
+        """ *** Test logic will be replaced by TC3 ***
+        
+        Verifies basic arithmetic addition functionality via UI interactions.
 
         This test case simulates a user performing '12 + 38' on the OpenCalculator 
         app by clicking coordinate-based buttons and verifies the result output 
@@ -69,7 +78,7 @@ class CalculatorTest(EnterpriseBaseTest):
         asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_3), "Failed to click button '3'")
         asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_8), "Failed to click button '8'")
         asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_EQUAL), "Failed to click button '='")
-        time.sleep(UI_DEFAULT_WAIT_SEC_3)
+        self.ui_controller.wait_for_element_by_ui(UI_DEFAULT_WAIT_SEC_3)
 
         #verificaiton of calculation matches the expection
         self.dut.log.info("Verifying if the result... ")
@@ -100,7 +109,6 @@ class CalculatorTest(EnterpriseBaseTest):
         #long click delete button
         self.dut.log.info("Long clicking the DEL button...")
         asserts.assert_true(self.ui_controller.long_click_by_id(CALC_BTN_DEL), "Failed to long click...")
-        time.sleep(UI_DEFAULT_WAIT_SEC_1)
 
         #check if text is deleted
         self.dut.log.info("Checking if text is deleted...")
@@ -111,6 +119,23 @@ class CalculatorTest(EnterpriseBaseTest):
                             f"Clear Error! Expected empty string but got '{final_text}")
 
         self.dut.log.info('Long click delete successful. Screen is completely empty.')
+
+    def logic_calculator_addition(self, btn_a, btn_b, expected_res):
+        """ TC3: additional test by using generate_tests. """
+        self.dut.log.info("=== Running Addition Logic: %s ===", expected_res)
+        asserts.assert_true(self.ui_controller.click_by_id(btn_a), "Failed to click button A")
+        asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_ADD), "Failed to click button '+")
+        asserts.assert_true(self.ui_controller.click_by_id(btn_b), "Failed to click button B")
+        asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_EQUAL), "Failed to click button '='")
+        # wait for result
+        self.ui_controller.wait_for_element_by_ui(UI_DEFAULT_WAIT_SEC_1, CALC_RES_ID_RESULT)
+        # check result
+        act_res = self.ui_controller.get_text_by_id(CALC_RES_ID_RESULT)
+        asserts.assert_equal(
+            expected_res,
+            act_res,
+            f'Expect {expected_res} but got {act_res}'
+        )
 
     def teardown_class(self):        
         self.dut.log.info("=== teardown_class: Starting Teardown ===")
