@@ -26,10 +26,7 @@ class ChromeNetworkTest(EnterpriseBaseTest):
                                     package_path=None,
                                     dest_path=dest_path,
                                     requires_network=True)
-        # load MBS
-        self.dut.log.info('Loading MBS...')
-        self.dut.load_snippet('mbs', 'com.google.android.mobly.snippet.bundled')
-
+                                    
     def test_offline_dinosaur_appears(self) -> bool:
         """ 
         launch app -> 
