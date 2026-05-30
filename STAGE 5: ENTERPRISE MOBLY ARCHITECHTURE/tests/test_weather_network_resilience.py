@@ -36,17 +36,13 @@ class ChromeNetworkTest(EnterpriseBaseTest):
         check if "No internet" string pops out
         """
         self.dut.log.info('=== Start testing offline donosaur appears ===')
-        # launch app
-        asserts.assert_true(self.app_controller.launch_app(self.app_config), 
-                            f'Expect launching {self.app_config} but fail...')
         # disconnect Wifi
         self.dut.mbs.wifiDisable()
-        time.sleep(UI_DEFAULT_WAIT_SEC_5)
-        # refresh current web page by searching under network is offline
-        asserts.assert_true(self.ui_controller.click_by_id(CHROME_ID_SEARCH_BOX), 'Expect clicking on search box but fail...')
-        self.dut.adb.shell("input text 'mobly'")
-        self.dut.adb.shell("input keyevent 66")
-
+        time.sleep(UI_DEFAULT_WAIT_SEC_3)
+        # launch app 
+        asserts.assert_true(self.app_controller.launch_app(self.app_config),
+                            f'Expect launching {self.app_config} but failed...')
+                            
         found = self.ui_controller.wait_for_element_by_text(UI_DEFAULT_WAIT_SEC_3, CHROME_OFFLINE_TEXT)
         asserts.assert_true(found, 'Failed to verify Chrome offline page (Dinosaur page) appeared.')
 

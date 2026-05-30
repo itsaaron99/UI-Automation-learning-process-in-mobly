@@ -189,9 +189,10 @@ class AppController:
                 self.ad.log.info('AppController: Detecting launching Chrome,launching with bypass flags...')
                 self.ad.adb.shell([
                                 'am', 'start', '-n', chrome_main_activity,
+                                '-d', 'https://www.google.com',
                                 '--es', 'com.android.chrome.FirstRunActivity.SKIP_FIRST_RUN_EXPERIENCE', 'true',
                                 '--es', 'dont_sign_in', 'true'
-                            ])            
+                            ])
             else:    
                 self.ad.adb.shell(['monkey', '-p', config.package_name, '-c', 'android.intent.category.LAUNCHER', '1'])
 
