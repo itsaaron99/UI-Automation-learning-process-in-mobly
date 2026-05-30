@@ -1,8 +1,8 @@
 from mobly import base_test
 from mobly.controllers import android_device
-from libs.wifi_controller import WifiController
-from libs.app_controller import AppController
-from libs.ui_controller import UIController
+from automation_mobly.libs.wifi_controller import WifiController
+from automation_mobly.libs.app_controller import AppController
+from automation_mobly.libs.ui_controller import UIController
 
 
 class EnterpriseBaseTest(base_test.BaseTestClass):

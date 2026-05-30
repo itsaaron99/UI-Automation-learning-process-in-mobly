@@ -16,7 +16,7 @@ Core Functions:
     - App inspection: is_installed, is_app_in_foreground, get_app_version
     - Device UI: take_screenshot
 """
-from data_models.app_protos import AppConfig
+from automation_mobly.data_models.app_protos import AppConfig
 import time
 
 class AppController:

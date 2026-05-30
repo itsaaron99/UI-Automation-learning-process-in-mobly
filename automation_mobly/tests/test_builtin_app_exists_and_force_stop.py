@@ -8,8 +8,8 @@ import os
 sys.path.insert(0, os.getcwd())
 from mobly import test_runner
 from mobly import asserts
-from common.base_test import EnterpriseBaseTest
-from data_models.app_protos import AppConfig
+from automation_mobly.common.base_test import EnterpriseBaseTest
+from automation_mobly.data_models.app_protos import AppConfig
 
 class AppManagementTest(EnterpriseBaseTest):
 

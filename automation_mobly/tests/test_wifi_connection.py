@@ -6,8 +6,8 @@ sys.path.insert(0, os.getcwd())
 
 from mobly import test_runner
 from mobly import asserts
-from common.base_test import EnterpriseBaseTest
-from data_models.wifi_protos import WifiConfig
+from automation_mobly.common.base_test import EnterpriseBaseTest
+from automation_mobly.data_models.wifi_protos import WifiConfig
 
 class WifiConnectionTest(EnterpriseBaseTest):
     """

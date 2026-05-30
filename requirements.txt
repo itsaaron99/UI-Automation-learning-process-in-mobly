@@ -1,7 +1,19 @@
+# --- Basic ---
+pytest==8.4.2
 iniconfig==2.3.0
 packaging==25.0
 pluggy==1.6.0
 Pygments==2.19.2
-pytest==8.4.2
-mobly
-pyyaml
+pyyaml==6.0.1
+tomli==2.0.1
+exceptiongroup==1.2.0
+
+# --- Google Mobly kernal tool---
+mobly==1.12.2
+protobuf==4.25.3
+portpicker==1.6.0
+
+# --- Infra tool ---
+psutil==5.9.8
+six==1.16.0
+setuptools==69.5.1

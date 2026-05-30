@@ -1,12 +1,20 @@
 import sys
 import os
-
-sys.path.insert(0, os.getcwd())
 from mobly import test_runner
 from mobly import asserts
-from common.base_test import EnterpriseBaseTest
-from data_models.app_protos import AppConfig
-from tests.constants import EXP_RESULT, RESET_RESULT, CALC_RES_ID_RESULT, UI_DEFAULT_WAIT_SEC_3, UI_DEFAULT_WAIT_SEC_1, CALC_BTN_1, CALC_BTN_2, CALC_BTN_3, CALC_BTN_8, CALC_BTN_ADD, CALC_BTN_EQUAL, CALC_BTN_DEL, ADDITION_TEST_DATA
+from automation_mobly.common.base_test import EnterpriseBaseTest
+from automation_mobly.data_models.app_protos import AppConfig
+from automation_mobly.tests.constants import (EXP_RESULT, 
+                                            RESET_RESULT, 
+                                            CALC_RES_ID_RESULT, 
+                                            UI_DEFAULT_WAIT_SEC_3, 
+                                            UI_DEFAULT_WAIT_SEC_1, 
+                                            CALC_BTN_1, CALC_BTN_2, 
+                                            CALC_BTN_3, CALC_BTN_8, 
+                                            CALC_BTN_ADD, 
+                                            CALC_BTN_EQUAL, 
+                                            CALC_BTN_DEL, 
+                                            ADDITION_TEST_DATA)
 import time
 
 class CalculatorTest(EnterpriseBaseTest):
@@ -32,8 +40,8 @@ class CalculatorTest(EnterpriseBaseTest):
 
     def setup_generated_tests(self):
         self.generate_tests(
-            test_logic=logic_calculator_addition,
-            name_func=lambda _, _, expected_res: f"test_dynamic_addition_{expected_res}",
+            test_logic=self.logic_calculator_addition,
+            name_func=lambda no_use_var1, no_use_var2, expected_res: f"test_dynamic_addition_{expected_res}",
             arg_sets=ADDITION_TEST_DATA
         )
 

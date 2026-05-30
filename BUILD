@@ -1,0 +1,1 @@
+exports_files(["automation_mobly/ci_config.yaml",])

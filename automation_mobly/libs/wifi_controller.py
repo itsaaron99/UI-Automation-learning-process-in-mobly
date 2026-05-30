@@ -1,5 +1,5 @@
 import time 
-from data_models.wifi_protos import WifiConfig
+from automation_mobly.data_models.wifi_protos import WifiConfig
 
 class WifiController:
     
