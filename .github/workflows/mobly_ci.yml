@@ -41,7 +41,7 @@ jobs:
             emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -accel on
             script: |
               adb install -g "automation_code/tests/test_data/apks/mobly-bundled-snippets.apk"
-              cd automation_code && env PYTHONPATH="." python tests/test_weather_network_resilience.py -c ci_config.yaml
+              cd automation_code && env PYTHONPATH="." python tests/test_calculator_basic_arithmetic.py -c ci_config.yaml
 
       - name: Upload Test Results
         if: always() # Ensure logs are collected regardless of test success or failure
