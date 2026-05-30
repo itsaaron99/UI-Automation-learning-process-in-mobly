@@ -182,9 +182,18 @@ class AppController:
         if not self.is_installed(config):
             self.ad.log.error('AppController: %s is not installed, please try again.', config.package_name)
             return False
-        
         try:
-            self.ad.adb.shell(['monkey', '-p', config.package_name, '-c', 'android.intent.category.LAUNCHER', '1'])
+            # Skip welcome message of 1st time launching Chrome.
+            chrome_main_activity = "com.android.chrome/com.google.android.apps.chrome.Main"
+            if config.package_name == 'com.android.chrome':
+                self.ad.log.info('AppController: Detecting launching Chrome,launching with bypass flags...')
+                self.ad.adb.shell([
+                                'am', 'start', '-n', chrome_main_activity,
+                                '--es', 'com.android.chrome.FirstRunActivity.SKIP_FIRST_RUN_EXPERIENCE', 'true',
+                                '--es', 'dont_sign_in', 'true'
+                            ])            
+            else:    
+                self.ad.adb.shell(['monkey', '-p', config.package_name, '-c', 'android.intent.category.LAUNCHER', '1'])
 
         except Exception as e:
             error_msg = str(e).lower()
