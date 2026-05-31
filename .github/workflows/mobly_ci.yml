@@ -41,7 +41,7 @@ jobs:
             emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -accel on
             script: |
               adb install -g "automation_mobly/tests/test_data/apks/mobly-bundled-snippets.apk"
-              blaze test //automation_mobly/tests:builtin_app_exists_and_force_stop \
+              bazel test //automation_mobly/tests:builtin_app_exists_and_force_stop \
                               --test_output=streamed \
                               --test_arg="-c" \
                               --test_arg="automation_mobly/ci_config.yaml"
