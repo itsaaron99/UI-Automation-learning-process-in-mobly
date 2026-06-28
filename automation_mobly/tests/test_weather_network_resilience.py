@@ -1,7 +1,8 @@
+"""
+TODO:Fix the blocker through real device
+"""
 import sys
 import os
-
-sys.path.insert(0, os.getcwd())
 from mobly import test_runner
 from mobly import asserts
 from automation_mobly.common.base_test import EnterpriseBaseTest
@@ -28,7 +29,7 @@ class ChromeNetworkTest(EnterpriseBaseTest):
                                     dest_path=dest_path,
                                     requires_network=True)
                                     
-    def test_offline_dinosaur_appears(self) -> bool:
+    def test_offline_dinosaur_appears(self):
         """ 
         launch app -> 
         disconnect network -> 

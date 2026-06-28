@@ -329,7 +329,7 @@ class UIController:
         self.ad.log.info('UIController: Failed to find element [%s] after %d seconds.', resource_id, timeout)
         return False
 
-    def wait_for_element_by_text(self, time_out: int, text: str) -> bool:
+    def wait_for_element_by_text(self, time_out: int, text: str, freq: float) -> bool:
         """Waits for an element to appear on the screen within the timeout for non resource_id
         
         This implements an explicit wait (polling mechanism) to avoid flaky 
@@ -338,14 +338,11 @@ class UIController:
         Args:
             text: The ID of the test element to wait for.
             timeout: The maximum waiting time in seconds. Defaults to 10.
+            freq: Frequency timeout setup(sec.).
 
         Returns:
             True if the element is found within the timeout, False otherwise.
-        
-        Raises:
-            RuntimeError: If the device gets disconnected or goes offline.
         """
-        polling_freq = 0.5
         start_time = time.time()
         while (time.time() - start_time) < time_out:
             get_text_result = self.get_text_by_text(text)

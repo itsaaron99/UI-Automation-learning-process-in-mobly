@@ -39,3 +39,37 @@ py_test(
         "@pip_deps//mobly",
     ],
 )
+
+py_test(
+    name = "test_fake_app_not_installed",
+    srcs = ["test_fake_app_not_installed.py"],
+    main = "test_fake_app_not_installed.py",
+    imports = ["../.."],
+    data = [
+        "//:automation_mobly/ci_config.yaml",
+    ],
+    deps = [
+        ":constants_lib",
+        "//automation_mobly/common:common_lib",
+        "//automation_mobly/data_models:data_models_lib",
+        "//automation_mobly/libs:libs_lib",
+        "@pip_deps//mobly",
+    ],
+)
+
+py_test(
+    name = "test_system_interruption_and_locale_change",
+    srcs = ["test_system_interruption_and_locale_change.py"],
+    main = "test_system_interruption_and_locale_change.py",
+    imports = ["../.."],
+    data = [
+        "//:automation_mobly/ci_config.yaml",
+    ],
+    deps = [
+        ":constants_lib",
+        "//automation_mobly/common:common_lib",
+        "//automation_mobly/data_models:data_models_lib",
+        "//automation_mobly/libs:libs_lib",
+        "@pip_deps//mobly",
+    ],
+)

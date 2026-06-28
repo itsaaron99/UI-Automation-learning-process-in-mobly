@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 from mobly import test_runner
 from mobly import asserts
 from automation_mobly.common.base_test import EnterpriseBaseTest
@@ -15,8 +16,6 @@ from automation_mobly.tests.constants import (EXP_RESULT,
                                             CALC_BTN_EQUAL, 
                                             CALC_BTN_DEL, 
                                             ADDITION_TEST_DATA)
-import time
-
 class CalculatorTest(EnterpriseBaseTest):
 
     def setup_class(self):

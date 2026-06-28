@@ -335,3 +335,23 @@ class AppController:
 
         self.ad.log.info('AppController: Screenshot successfully saved to %s', dest_path)
         return True
+
+    def wait_for_locale_change(self, target_locale: str, timeout: int, freq: float) -> bool:
+        """Wait for locale configuration change will polling.
+        Args:
+            target_locale: Target of which locale config
+
+        Returns:
+            True if the locale config swiched successfully, False otherwise.
+        """
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            current_config = self.dut.adb.shell("dumpsys activity configuration")
+            if target_locale in current_config:
+                self.dut.log.info(f'AppController: Locale configuraion has been changed to {target_locale}')
+                return True
+
+            time.sleep(freq)
+
+        self.dut.log.error('AppController: Fail to change locale configuration...')
+        return False

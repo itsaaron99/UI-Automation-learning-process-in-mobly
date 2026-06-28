@@ -28,3 +28,34 @@ class EnterpriseBaseTest(base_test.BaseTestClass):
         if hasattr(self, 'dut'):
             self.dut.log.info("Executing EnterpriseBaseTest global teardown...")
             self.dut.adb.shell(['input', 'keyevent', 'KEYCODE_HOME'])
+
+    def on_fail(self, record):
+        """Lifecycle callback automatically triggered by Mobly when a test case fails.
+
+        This method acts as a global safety net to capture the exact state of the 
+        Device Under Test (DUT) at the moment of failure. It extracts failure details 
+        from the test record and can be extended to perform automated triage actions 
+        such as capturing screenshots, dumping logcat, or uploading artifacts to 
+        the test dashboard.
+
+        Args:
+            record: A mobly.records.TestResultRecord object containing telemetry 
+                    and execution details about the failed test case.
+        """
+        self.dut.log.error(f"--- [Global Failure Hook] Test case failed in: {record.test_name} ---")
+        self.dut.log.error(f"Reason: {record.details}")
+
+        if hasattr(self, 'app_controller'):
+            try:
+                if hasattr(self, 'app_config') and getattr(self.app_config, 'test_app_screenshot_path', None):
+                    screenshot_dir = self.test_app_screenshot_path.dest_path
+                else:
+                    screenshot_dir = "/tmp/mobly_failure_screenshots"
+                
+                self.dut.log.info(f"BaseTest: Disastrous scene detected. Capturing screenshot to: {screenshot_dir}")
+                self.app_controller.take_screenshot(screenshot_dir)
+                
+            except Exception as e:
+                self.dut.log.error(f"BaseTest: Failed to take failure screenshot due to: {e}")
+        else:
+            self.dut.log.warn("BaseTest: app_controller is not initialized. Skipping automated screenshot.")

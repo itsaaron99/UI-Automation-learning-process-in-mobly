@@ -1,9 +1,6 @@
 import sys
 import os
 import time
-
-sys.path.insert(0, os.getcwd())
-
 from mobly import test_runner
 from mobly import asserts
 from automation_mobly.common.base_test import EnterpriseBaseTest

@@ -1,11 +1,5 @@
-"""
-TODO: Finish the test lifecycle
-"""
-
 import sys
 import os
-
-sys.path.insert(0, os.getcwd())
 from mobly import test_runner
 from mobly import asserts
 from automation_mobly.common.base_test import EnterpriseBaseTest
@@ -13,9 +7,21 @@ from automation_mobly.data_models.app_protos import AppConfig
 
 class AppManagementTest(EnterpriseBaseTest):
 
-    def test_fake_app_not_installed(self):
-        fake_config = AppConfig(package_name='com.ghost.app.not.exist')
+    def setup_class(self):
+        super().setup_class
+        pkg_name = self.user_params.get('test_not_exist_app', '')
+        self.app_config = AppConfig(package_name='pkg_name')
 
-        is_installed = self.app_controller.is_installed(fake_config)
-        asserts.assert_false(is_installed, "Ghost app shouldn't be installed")
+    def test_fake_app_not_installed(self):
+        is_installed = self.app_controller.is_installed(self.app_config)
+        asserts.assert_false(is_installed, "App shouldn't be installed...")
         self.dut.log.info("Test passed: Ghost app is correctly identified as not installed")
+
+    def teardown_class(self):
+        self.dut.log.info('=== teardown_class: Starting Teardown ===')
+        self.dut.log.info('Ghost app, not exist... dut executing home screen.')
+        super().teardown_class()
+
+if __name__ == '__main__':
+    del EnterpriseBaseTest
+    test_runner.main()
