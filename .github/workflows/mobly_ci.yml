@@ -41,7 +41,7 @@ jobs:
             emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -accel on
             script: |
               adb install -g "automation_mobly/tests/test_data/apks/mobly-bundled-snippets.apk"
-              bazel test //automation_mobly/tests:builtin_app_exists_and_force_stop \
+              bazel test //automation_mobly/tests:test_system_interruption_and_locale_change \
                 --test_output=streamed \
                 --test_env=PATH \
                 --test_arg="-c" \
