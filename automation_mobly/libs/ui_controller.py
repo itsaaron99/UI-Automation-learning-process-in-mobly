@@ -301,15 +301,15 @@ class UIController:
             self.ad.log.error('UIController: Failed to long click by ID. Error: %s', e)
             return False
 
-    def wait_for_element_by_ui(self, timeout: int, resource_id: str) -> bool:
+    def wait_for_element_by_ui(self, timeout: int, resource_id: str = None) -> bool:
         """Waits for an element to appear on the screen within the timeout.
         
         This implements an explicit wait (polling mechanism) to avoid flaky 
         tests caused by UI rendering delays or network latency.
 
         Args:
-            resource_id: The ID of the UI element to wait for.
-            timeout: The maximum waiting time in seconds. Defaults to 10.
+            timeout: The maximum waiting time in seconds.
+            resource_id: Optional. The ID of the UI element to wait for.
 
         Returns:
             True if the element is found within the timeout, False otherwise.
@@ -317,6 +317,10 @@ class UIController:
         Raises:
             RuntimeError: If the device gets disconnected or goes offline.
         """
+        if not resource_id:
+            time.sleep(timeout)
+            return True
+
         polling_freq = 0.5
         start_time = time.time()
         while (time.time() - start_time) < timeout:

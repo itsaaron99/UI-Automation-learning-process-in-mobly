@@ -48,7 +48,7 @@ class CalculatorTest(EnterpriseBaseTest):
         """Runs on every TC, which will reset the calculator """
         self.dut.log.info("Setup Test: Reseting the calculator...")
         asserts.assert_true(self.ui_controller.long_click_by_id(CALC_BTN_DEL), "Failed to reset...")
-        self.ui_controller.wait_for_element_by_ui(UI_DEFAULT_WAIT_SEC_1)
+        self.ui_controller.wait_for_element_by_ui(UI_DEFAULT_WAIT_SEC_1, CALC_RES_ID_RESULT)
         #check if text is empty
         current_text = self.ui_controller.get_text_by_id(CALC_RES_ID_RESULT)
         asserts.assert_equal(
@@ -85,7 +85,7 @@ class CalculatorTest(EnterpriseBaseTest):
         asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_3), "Failed to click button '3'")
         asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_8), "Failed to click button '8'")
         asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_EQUAL), "Failed to click button '='")
-        self.ui_controller.wait_for_element_by_ui(UI_DEFAULT_WAIT_SEC_3)
+        self.ui_controller.wait_for_element_by_ui(UI_DEFAULT_WAIT_SEC_3, CALC_RES_ID_RESULT)
 
         # verification of calculation matches the expectation
         self.dut.log.info("Verifying if the result... ")
