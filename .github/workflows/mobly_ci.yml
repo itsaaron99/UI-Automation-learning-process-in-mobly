@@ -10,13 +10,13 @@ on:
         type: choice
         options:
           - all
-          - test_calculator_basic_arithmetic
-          - test_builtin_app_exists_and_force_stop
-          - test_fake_app_not_installed
-          - test_system_interruption_and_locale_change
-          - test_app_management
-          - test_weather_network_resilience
-          - test_wifi_connection
+          - test_calculator_basic_arithmetic.py
+          - test_builtin_app_exists_and_force_stop.py
+          - test_fake_app_not_installed.py
+          - test_system_interruption_and_locale_change.py
+          - test_app_management.py
+          - test_weather_network_resilience.py
+          - test_wifi_connection.py
 
 jobs:
   test:
