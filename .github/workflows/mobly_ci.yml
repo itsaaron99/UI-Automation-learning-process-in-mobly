@@ -49,12 +49,7 @@ jobs:
             emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -accel on
             script: |
               adb install -g "automation_mobly/tests/test_data/apks/mobly-bundled-snippets.apk"
-              TARGET="${{ inputs.test_target }}"
-              if [ "$TARGET" = "all" ]; then
-                bazel test //automation_mobly/tests:all --test_output=streamed --test_env=PATH --test_arg="-c" --test_arg="automation_mobly/ci_config.yaml"
-              else
-                bazel test //automation_mobly/tests:$TARGET --test_output=streamed --test_env=PATH --test_arg="-c" --test_arg="automation_mobly/ci_config.yaml"
-              fi
+              if [ "${{ inputs.test_target }}" = "all" ]; then bazel test //automation_mobly/tests:all --test_output=streamed --test_env=PATH --test_arg="-c" --test_arg="automation_mobly/ci_config.yaml"; else bazel test //automation_mobly/tests:${{ inputs.test_target }} --test_output=streamed --test_env=PATH --test_arg="-c" --test_arg="automation_mobly/ci_config.yaml"; fi
 
       - name: Upload Test Results
         if: always()
