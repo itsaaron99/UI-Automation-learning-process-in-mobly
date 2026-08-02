@@ -73,3 +73,54 @@ py_test(
         "@pip_deps//mobly",
     ],
 )
+
+py_test(
+    name = "test_app_management",
+    srcs = ["test_app_management.py"],
+    main = "test_app_management.py",
+    imports = ["../.."],
+    data = [
+        "//:automation_mobly/ci_config.yaml",
+    ],
+    deps = [
+        ":constants_lib",
+        "//automation_mobly/common:common_lib",
+        "//automation_mobly/data_models:data_models_lib",
+        "//automation_mobly/libs:libs_lib",
+        "@pip_deps//mobly",
+    ],
+)
+
+py_test(
+    name = "test_weather_network_resilience",
+    srcs = ["test_weather_network_resilience.py"],
+    main = "test_weather_network_resilience.py",
+    imports = ["../.."],
+    data = [
+        "//:automation_mobly/ci_config.yaml",
+    ],
+    deps = [
+        ":constants_lib",
+        "//automation_mobly/common:common_lib",
+        "//automation_mobly/data_models:data_models_lib",
+        "//automation_mobly/libs:libs_lib",
+        "@pip_deps//mobly",
+    ],
+)
+
+py_test(
+    name = "test_wifi_connection",
+    srcs = ["test_wifi_connection.py"],
+    main = "test_wifi_connection.py",
+    imports = ["../.."],
+    data = [
+        "//:automation_mobly/ci_config.yaml",
+    ],
+    deps = [
+        ":constants_lib",
+        "//automation_mobly/common:common_lib",
+        "//automation_mobly/data_models:data_models_lib",
+        "//automation_mobly/libs:libs_lib",
+        "@pip_deps//mobly",
+    ],
+)
