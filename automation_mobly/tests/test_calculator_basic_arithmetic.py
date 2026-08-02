@@ -87,7 +87,7 @@ class CalculatorTest(EnterpriseBaseTest):
         asserts.assert_true(self.ui_controller.click_by_id(CALC_BTN_EQUAL), "Failed to click button '='")
         self.ui_controller.wait_for_element_by_ui(UI_DEFAULT_WAIT_SEC_3)
 
-        #verificaiton of calculation matches the expection
+        # verification of calculation matches the expectation
         self.dut.log.info("Verifying if the result... ")
         act_result = self.ui_controller.get_text_by_id(CALC_RES_ID_RESULT)
         asserts.assert_equal(
@@ -96,7 +96,7 @@ class CalculatorTest(EnterpriseBaseTest):
                     f"Expected the result to be '{EXP_RESULT}' but got '{act_result}'"
                 )
 
-        self.dut.log.info('Result matches expection: %s', EXP_RESULT)
+        self.dut.log.info('Result matches expectation: %s', EXP_RESULT)
 
         # take screen shot
         take_screenshot_result = self.app_controller.take_screenshot(self.app_config.dest_path)
@@ -122,8 +122,8 @@ class CalculatorTest(EnterpriseBaseTest):
         final_text = self.ui_controller.get_text_by_id(CALC_RES_ID_RESULT)
         asserts.assert_equal(
                             final_text, 
-                            "", 
-                            f"Clear Error! Expected empty string but got '{final_text}")
+                            RESET_RESULT, 
+                            f"Clear Error! Expected empty string but got '{final_text}'")
 
         self.dut.log.info('Long click delete successful. Screen is completely empty.')
 

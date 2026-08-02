@@ -13,41 +13,29 @@ class WifiConnectionTest(EnterpriseBaseTest):
     """
 
     def test_wifi_connection(self):
-        """ 
-        1. Instantiate WifiConfig object (Fill out the form/proto)
-        Retrieve parameters from config.yaml
-        """
+        # 1. Instantiate WifiConfig object (Retrieve parameters from config.yaml)
         ssid = self.user_params.get('wifi_ssid', '')
         pwd = self.user_params.get('wifi_pwd', '')
 
-        """ Debug Log """
-        self.dut.log.info('DEBUG: Target SSID from config is: %s',ssid)
+        # Debug Log
+        self.dut.log.info('DEBUG: Target SSID from config is: %s', ssid)
 
-        """ Create the data model (the Contract) """
+        # Create the data model (the Contract)
         wifi_config = WifiConfig(ssid=ssid, password=pwd)
 
-        """ 
-        2. Call self.wifi_controller.connect() to execute connection
-        The controller is already injected in the BaseTest setup
-        """
+        # 2. Call self.wifi_controller.connect() to execute connection
         self.wifi_controller.connect(wifi_config)
 
-        """
-        3. Use asserts.assert_true to verify connection status
-        Get current connection details from the snippet
-        """
-
+        # 3. Use asserts.assert_true to verify connection status
         conn_info = self.dut.mbs.wifiGetConnectionInfo()
         current_ssid = conn_info.get('SSID')
 
         self.dut.log.info('Current SSID on device: %s', current_ssid)
 
-        """
-        Verify that the current SSID matches the target SSID
-        Note: Android might return SSID enclosed in quotes (e.g., "AndroidWifi")
-        """
-
-        is_connected = ssid in current_ssid if current_ssid else False
+        # Verify that the current SSID matches the target SSID
+        # Note: Android returns SSID enclosed in quotes (e.g., "AndroidWifi")
+        clean_ssid = current_ssid.strip('"') if current_ssid else ''
+        is_connected = (clean_ssid == ssid)
 
         asserts.assert_true(
             is_connected,

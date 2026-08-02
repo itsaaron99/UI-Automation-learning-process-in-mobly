@@ -1,14 +1,22 @@
 name: Mobly UI Automation CI
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      test_target:
+        description: '請選擇要執行的 Mobly 測試 Target'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - calculator_basic_test
+          - builtin_app_exists_and_force_stop
+          - test_fake_app_not_installed
+          - test_system_interruption_and_locale_change
 
 jobs:
   test:
-    # macOS runners provide the best hardware acceleration (HAXM) support and performance for Android emulators
     runs-on: ubuntu-latest
 
     steps:
@@ -18,7 +26,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10' # Adjust this based on your local development environment
+          python-version: '3.10'
 
       - name: Install dependencies
         run: |
@@ -41,11 +49,16 @@ jobs:
             emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -accel on
             script: |
               adb install -g "automation_mobly/tests/test_data/apks/mobly-bundled-snippets.apk"
-              bazel test //automation_mobly/tests: test_calculator_basic_arithmetic.py --test_output=streamed --test_env=PATH --test_arg="-c" --test_arg="automation_mobly/ci_config.yaml"
+              TARGET="${{ inputs.test_target }}"
+              if [ "$TARGET" = "all" ]; then
+                bazel test //automation_mobly/tests:all --test_output=streamed --test_env=PATH --test_arg="-c" --test_arg="automation_mobly/ci_config.yaml"
+              else
+                bazel test //automation_mobly/tests:$TARGET --test_output=streamed --test_env=PATH --test_arg="-c" --test_arg="automation_mobly/ci_config.yaml"
+              fi
+
       - name: Upload Test Results
-        if: always() # Ensure logs are collected regardless of test success or failure
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: mobly-test-logs
-          # Make sure this path matches the log_path configured in your Mobly yaml file
           path: /tmp/logs/

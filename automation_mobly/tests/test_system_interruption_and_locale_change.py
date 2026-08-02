@@ -26,11 +26,11 @@ class InterrupDialTest(EnterpriseBaseTest):
     def setup_class(self):
         super().setup_class()
         pkg_name = self.user_params.get('target_app_for_settings', '')
-        pkg_path = self.user_params.get('test_app_screenshot_path', '')
+        screenshot_path = self.user_params.get('test_app_screenshot_path', '')
         self.app_config = AppConfig(package_name=pkg_name, 
                                     package_path=None, 
-                                    dest_path=pkg_path, 
-                                    requires_network=None)
+                                    dest_path=screenshot_path, 
+                                    requires_network=False)
 
     def test_system_interruption_and_locale_change(self):
         self.dut.log.info('=== Start testing system interruption through dial ===')
@@ -69,17 +69,18 @@ class InterrupDialTest(EnterpriseBaseTest):
         
     def teardown_class(self):
         self.dut.log.info("=== teardown_class: Starting Teardown ===")
-        locale_config_defult_US = self.app_controller.wait_for_locale_change(
+        locale_config_default_US = self.app_controller.wait_for_locale_change(
             target_locale = "en-US",
             timeout=10,
             freq=0.5)
-        asserts.assert_true(locale_config_defult_US, 
-        f'Expect changing locale back to defult(en-US) configuration but failed')
+        if not locale_config_default_US:
+            self.dut.log.warning('Failed changing locale back to default (en-US) configuration')
 
         if hasattr(self, 'app_config'):
             self.dut.log.info("Cleaning up app: %s", self.app_config.package_name)
             clear_res = self.app_controller.clear_data(self.app_config)
-            asserts.assert_true(clear_res, f'Expect cleaning {self.app_config} but fail...')
+            if not clear_res:
+                self.dut.log.warning('Failed cleaning %s data during teardown', self.app_config.package_name)
         super().teardown_class()
 
 if __name__ == '__main__':

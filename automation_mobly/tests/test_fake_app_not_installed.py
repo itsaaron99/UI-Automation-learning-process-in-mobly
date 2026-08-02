@@ -5,12 +5,12 @@ from mobly import asserts
 from automation_mobly.common.base_test import EnterpriseBaseTest
 from automation_mobly.data_models.app_protos import AppConfig
 
-class AppManagementTest(EnterpriseBaseTest):
+class FakeAppNotInstalledTest(EnterpriseBaseTest):
 
     def setup_class(self):
-        super().setup_class
+        super().setup_class()
         pkg_name = self.user_params.get('test_not_exist_app', '')
-        self.app_config = AppConfig(package_name='pkg_name')
+        self.app_config = AppConfig(package_name=pkg_name)
 
     def test_fake_app_not_installed(self):
         is_installed = self.app_controller.is_installed(self.app_config)

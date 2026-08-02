@@ -19,7 +19,7 @@ from mobly import asserts
 from automation_mobly.common.base_test import EnterpriseBaseTest
 from automation_mobly.data_models.app_protos import AppConfig
 
-class AppManagementTest(EnterpriseBaseTest):
+class BuiltinAppForceStopTest(EnterpriseBaseTest):
 
     def setup_class(self):
         super().setup_class()
@@ -33,17 +33,17 @@ class AppManagementTest(EnterpriseBaseTest):
 
     def test_builtin_app_exists_and_force_stop(self):
         # Launch app
-        self.dut.log.info(f'Start launching {pkg_name}...')
+        self.dut.log.info(f'Start launching {self.app_config.package_name}...')
         res_launch_app = self.app_controller.launch_app(self.app_config)
-        asserts.assert_true(res_launch_app, f"Expect {package_name} be launched but failed...")
+        asserts.assert_true(res_launch_app, f"Expect {self.app_config.package_name} be launched but failed...")
 
         # Check if app is in forgeground
         res_app_in_foreground = self.app_controller.is_app_in_foreground(self.app_config)
-        asserts.assert_true(res_app_in_foreground, f"Expect {package_name} is in foreground but failed...")
+        asserts.assert_true(res_app_in_foreground, f"Expect {self.app_config.package_name} is in foreground but failed...")
 
         # Force stop
         self.app_controller.force_stop(self.app_config)
-        self.dut.log.info("Test passed: %s is intalled and forced stopped", pkg_name)
+        self.dut.log.info("Test passed: %s is installed and forced stopped", self.app_config.package_name)
 
     def teardown_class(self):        
         self.dut.log.info("=== teardown_class: Starting Teardown ===")
@@ -51,7 +51,7 @@ class AppManagementTest(EnterpriseBaseTest):
         if hasattr(self, 'app_config'):
             self.dut.log.info("Cleaning up app: %s", self.app_config.package_name)
             res_clear_data = self.app_controller.clear_data(self.app_config)
-            asserts.assert_true(res_clear_data, f"Expect cleaning {pkg_name} data but fail...")
+            asserts.assert_true(res_clear_data, f"Expect cleaning {self.app_config.package_name} data but fail...")
         super().teardown_class()
 
 if __name__ == '__main__':

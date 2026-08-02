@@ -47,8 +47,8 @@ class EnterpriseBaseTest(base_test.BaseTestClass):
 
         if hasattr(self, 'app_controller'):
             try:
-                if hasattr(self, 'app_config') and getattr(self.app_config, 'test_app_screenshot_path', None):
-                    screenshot_dir = self.test_app_screenshot_path.dest_path
+                if hasattr(self, 'app_config') and getattr(self.app_config, 'dest_path', None):
+                    screenshot_dir = self.app_config.dest_path
                 else:
                     screenshot_dir = "/tmp/mobly_failure_screenshots"
                 
