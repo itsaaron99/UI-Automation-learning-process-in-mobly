@@ -4,16 +4,19 @@ on:
   workflow_dispatch:
     inputs:
       test_target:
-        description: '請選擇要執行的 Mobly 測試 Target'
+        description: 'Chose a test target to run. Default is all tests.'
         required: true
         default: 'all'
         type: choice
         options:
           - all
-          - calculator_basic_test
-          - builtin_app_exists_and_force_stop
+          - test_calculator_basic_arithmetic
+          - test_builtin_app_exists_and_force_stop
           - test_fake_app_not_installed
           - test_system_interruption_and_locale_change
+          - test_app_management
+          - test_weather_network_resilience
+          - test_wifi_connection
 
 jobs:
   test:

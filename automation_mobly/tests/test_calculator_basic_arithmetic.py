@@ -20,9 +20,9 @@ class CalculatorTest(EnterpriseBaseTest):
 
     def setup_class(self):
         super().setup_class()
-        pkg_name = self.user_params.get('target_app_pkg', '')
-        pkg_path = self.user_params.get('test_app_path', '')
-        dest_path = self.user_params.get('test_app_screenshot_path')
+        pkg_name = self.user_params.get('target_app_pkg_for_calculator') or self.user_params.get('target_app_pkg', '')
+        pkg_path = self.user_params.get('test_app_path_for_calculator') or self.user_params.get('test_app_path', '')
+        dest_path = self.user_params.get('test_app_screenshot_path', '/tmp/mobly_screenshots')
         self.app_config = AppConfig(package_name=pkg_name, package_path=pkg_path, dest_path=dest_path)
 
         #check if app is installed aready, else install first and launch it.

@@ -10,5 +10,5 @@ TestBeds:
       target_app_pkg_for_calculator: "com.darkempire78.opencalculator"
       target_app_pkg_for_chrome: "com.android.chrome"
       target_app_for_settings: "com.android.settings"
-      test_app_path_for_calculator: "/Users/aaron/Desktop/Learning Roadmap & Progress/STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/tests/test_data/apks/com.darkempire78.opencalculator.apk"
-      test_app_screenshot_path: "/Users/aaron/Desktop/Learning Roadmap & Progress/STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/screenshot"
+      test_app_path_for_calculator: "automation_mobly/tests/test_data/apks/com.darkempire78.opencalculator.apk"
+      test_app_screenshot_path: "automation_mobly/screenshot"

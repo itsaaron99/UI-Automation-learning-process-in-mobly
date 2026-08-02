@@ -309,6 +309,10 @@ class AppController:
         self.ad.log.info('AppController: Taking screenshot and saving to %s... ', dest_path)
 
         try:
+            if dest_path:
+                target_dir = dest_path if not os.path.splitext(dest_path)[1] else os.path.dirname(dest_path)
+                if target_dir:
+                    os.makedirs(target_dir, exist_ok=True)
             self.ad.adb.shell(['screencap', '-p', '/sdcard/temp_screen.png'])
             self.ad.adb.pull(['/sdcard/temp_screen.png', dest_path])
 

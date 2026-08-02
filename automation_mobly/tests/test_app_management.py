@@ -23,9 +23,9 @@ class AppManagementTest(EnterpriseBaseTest):
         self.apps_to_cleanup = []
 
     def test_launch_app_from_install_to_uninstall(self):
-        pkg_name = self.user_params.get('target_app_pkg', '')
-        pkg_path = self.user_params.get('test_app_path', '')
-        dest_path = self.user_params.get('test_app_screenshot_path')
+        pkg_name = self.user_params.get('target_app_pkg_for_calculator') or self.user_params.get('target_app_pkg', '')
+        pkg_path = self.user_params.get('test_app_path_for_calculator') or self.user_params.get('test_app_path', '')
+        dest_path = self.user_params.get('test_app_screenshot_path', '/tmp/mobly_screenshots')
         app_config = AppConfig(package_name=pkg_name, package_path=pkg_path, dest_path=dest_path)
         
         # Install process: Check if installed first. If not, then execute install

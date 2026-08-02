@@ -7,3 +7,12 @@ __pycache__/
 
 # OS-generated files
 .DS_Store
+Thumbs.db
+
+# Bazel build outputs
+bazel-*
+
+# Test logs & screenshots
+*.log
+screenshot/
+mobly_screenshots/
