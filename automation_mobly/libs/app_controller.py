@@ -17,6 +17,7 @@ Core Functions:
     - Device UI: take_screenshot
 """
 from automation_mobly.data_models.app_protos import AppConfig
+import os
 import time
 
 class AppController:

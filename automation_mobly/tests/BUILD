@@ -1,6 +1,11 @@
 # Must load Pyhthon module, defult=C++
 load("@rules_python//python:defs.bzl", "py_library", "py_test")
 
+filegroup(
+    name = "test_apks",
+    srcs = glob(["test_data/apks/*.apk"]),
+)
+
 py_library(
     name = "constants_lib",
     srcs = ["constants.py"],
@@ -12,6 +17,7 @@ py_test(
     main = "test_calculator_basic_arithmetic.py",
     imports = ["../.."],
     data = [
+        ":test_apks",
         "//:automation_mobly/ci_config.yaml",
     ],
     deps = [
@@ -29,6 +35,7 @@ py_test(
     main = "test_builtin_app_exists_and_force_stop.py",
     imports = ["../.."],
     data = [
+        ":test_apks",
         "//:automation_mobly/ci_config.yaml",
     ],
     deps = [
@@ -46,6 +53,7 @@ py_test(
     main = "test_fake_app_not_installed.py",
     imports = ["../.."],
     data = [
+        ":test_apks",
         "//:automation_mobly/ci_config.yaml",
     ],
     deps = [
@@ -63,6 +71,7 @@ py_test(
     main = "test_system_interruption_and_locale_change.py",
     imports = ["../.."],
     data = [
+        ":test_apks",
         "//:automation_mobly/ci_config.yaml",
     ],
     deps = [
@@ -80,6 +89,7 @@ py_test(
     main = "test_app_management.py",
     imports = ["../.."],
     data = [
+        ":test_apks",
         "//:automation_mobly/ci_config.yaml",
     ],
     deps = [
@@ -97,6 +107,7 @@ py_test(
     main = "test_weather_network_resilience.py",
     imports = ["../.."],
     data = [
+        ":test_apks",
         "//:automation_mobly/ci_config.yaml",
     ],
     deps = [
@@ -114,6 +125,7 @@ py_test(
     main = "test_wifi_connection.py",
     imports = ["../.."],
     data = [
+        ":test_apks",
         "//:automation_mobly/ci_config.yaml",
     ],
     deps = [
