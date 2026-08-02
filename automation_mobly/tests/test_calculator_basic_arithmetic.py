@@ -35,7 +35,7 @@ class CalculatorTest(EnterpriseBaseTest):
             launch_result = self.app_controller.launch_app(self.app_config)
             asserts.assert_true(launch_result, f"Expected app {pkg_name} to be launched, but failed")
         self.dut.log.info(f'App: {pkg_name} has been launched successfully.')
-        self.ui_controller.wait_for_element_by_ui(UI_DEFAULT_WAIT_SEC_1)
+        time.sleep(UI_DEFAULT_WAIT_SEC_1)
 
     def setup_generated_tests(self):
         self.generate_tests(
