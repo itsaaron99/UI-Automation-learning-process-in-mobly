@@ -1,0 +1,6 @@
+test_name,test_result,begin_time,end_time,duration,extra_errors
+test_calculator_basic_addition,PASS,1785657614668,1785657640571,25.903,{}
+test_calculator_long_click_clear,PASS,1785657640572,1785657660894,20.322,{}
+test_dynamic_addition_3,PASS,1785657660894,1785657680001,19.107,{}
+test_dynamic_addition_11,PASS,1785657680002,1785657699020,19.018,{}
+test_dynamic_addition_10,PASS,1785657699021,1785657718403,19.382,{}
