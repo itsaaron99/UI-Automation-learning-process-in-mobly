@@ -29,7 +29,7 @@ Skills Learned:
 ---
 
 ### Stage 3: Introduction to Android Automation (Mobly)
-**Status: In Completed**
+**Status: Completed**
 
 Skills to Learn:
 * **Google Mobly Framework:** Understanding the lifecycle (`setup_class`, `teardown_class`, `test_*`).
@@ -41,7 +41,7 @@ Skills to Learn:
 ---
 
 ### Stage 4: Modularization & Logic Encapsulation
-**Status: In Completed**
+**Status: Completed**
 
 Skills to Learn:
 * **Controller Pattern:** Separating test logic (Script) from device operations (Lib).
@@ -53,7 +53,7 @@ Skills to Learn:
 ---
 
 ### Stage 5: Enterprise Mobly Architecture (Current Focus)
-**Status: Active Practice**
+**Status: Completed**
 
 Skills to Learn:
 * **Layered Architecture:** Designing `config`, `common`, `libs`, `datamodels`, and `tests` layers.
@@ -81,7 +81,7 @@ Skills to Learn:
 ---
 
 ### Stage 7: Containerization & Advanced Analysis
-**Status: Planned**
+**Status: In progress**
 
 Skills to Learn:
 * Docker Core Concepts (Running tests in isolated containers)
@@ -89,3 +89,39 @@ Skills to Learn:
 * Visualization (Matplotlib for pass/fail trends)
 
 **Practical Goal:** Dockerize the test environment and create a dashboard to visualize test stability over time.
+
+---
+
+### Stage 8: Flaky Test Governance & Quarantine Mechanism
+**Status: Planned**
+
+Skills to Learn:
+* **Custom Python Decorators:** Building `@retry_on_flaky` to gracefully capture transient execution failures (`ADBTimeout`, `RuntimeError`).
+* **Test Telemetry & Tagging:** Tracking retried tests, tagging them as `FLAKY`, and exporting execution metrics to JSON reports.
+* **Bazel Target Quarantine:** Utilizing Bazel tags (`tags = ["flaky", "quarantine"]`) to physically isolate unstable test suites from the CI mainline.
+
+**Practical Goal:** Implement a global retry decorator in `base_test.py`, generate telemetry metrics for quality tracking, and configure Bazel targets to prevent flaky tests from blocking CI builds.
+
+---
+
+### Stage 9: Custom Developer CLI & Developer Enablement
+**Status: Planned**
+
+Skills to Learn:
+* **CLI Tool Development:** Building a `mobly-cli` tool using Python `click`/`argparse` to abstract complex Bazel and Mobly commands.
+* **Sanity Pre-flight Engine:** Automating environment pre-checks (`adb devices` connectivity, MBS Snippet APK installation, `PATH` verification).
+* **Developer Codelabs:** Writing production-grade Codelabs and developer guides to improve Engineering Productivity.
+
+**Practical Goal:** Develop a single-command `mobly-cli` tool that validates local environment readiness and allows SWEs (Software Engineers) to execute tests locally within seconds.
+
+---
+
+### Stage 10: Logcat Triage Parser & Android System Mocking
+**Status: Planned**
+
+Skills to Learn:
+* **Logcat Automated Triage:** Parsing logcat outputs upon test failure to extract `FATAL EXCEPTION`, `NullPointerException`, and `ANR` stack traces.
+* **Android System Mocking:** Using `adb shell am broadcast` and `cmd` to simulate extreme system states (Low Memory Killer, battery overheating, network drops).
+* **Root Cause Analysis (RCA):** Attaching extracted crash logs and telemetry directly to automated test report summaries.
+
+**Practical Goal:** Integrate a Logcat Triage Parser into the `on_fail` lifecycle hook to automatically extract crash root causes, and write edge-case test cases using Android system mocking.
